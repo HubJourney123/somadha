@@ -1,65 +1,133 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useEffect, useState } from 'react';
+import { useSession, signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import Header from '@/components/layout/Header';
+import BottomNav from '@/components/layout/BottomNav';
+import Carousel from '@/components/home/Carousel';
+import StatsSection from '@/components/home/StatsSection';
+import AboutSection from '@/components/home/AboutSection';
+import ActivitiesSection from '@/components/home/ActivitiesSection';
+import Button from '@/components/ui/Button';
+import { FiLogIn, FiArrowRight } from 'react-icons/fi';
+import { motion } from 'framer-motion';
+
+export default function HomePage() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [carouselImages, setCarouselImages] = useState([]);
+
+  useEffect(() => {
+    fetchCarouselImages();
+  }, []);
+
+  const fetchCarouselImages = async () => {
+    try {
+      const response = await fetch('/api/carousel');
+      if (response.ok) {
+        const data = await response.json();
+        setCarouselImages(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching carousel images:', error);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg">
+      <Header />
+      
+      <main className="container-padding with-bottom-nav">
+        {/* Hero Section */}
+        <section className="py-8 space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center max-w-4xl mx-auto"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              স্বাগতম <span className="text-primary">সমাধা</span>য়
+            </h1>
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-8">
+              আপনার সমস্যা জানান, সমাধান পান। একসাথে গড়ি উন্নত ব্রাহ্মণবাড়িয়া।
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              {!session ? (
+                <>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    onClick={() => signIn('google')}
+                  >
+                    <FiLogIn className="w-5 h-5" />
+                    Google দিয়ে সাইন ইন করুন
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    onClick={() => router.push('/post-complaint')}
+                  >
+                    অভিযোগ পোস্ট করুন
+                    <FiArrowRight className="w-5 h-5" />
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={() => router.push('/post-complaint')}
+                >
+                  অভিযোগ পোস্ট করুন
+                  <FiArrowRight className="w-5 h-5" />
+                </Button>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Carousel */}
+          <Carousel images={carouselImages} />
+        </section>
+
+        {/* Stats Section */}
+        <section className="py-12">
+          <StatsSection />
+        </section>
+
+        {/* About Section */}
+        <section className="py-12">
+          <AboutSection />
+        </section>
+
+        {/* Activities Section */}
+        <section className="py-12">
+          <ActivitiesSection />
+        </section>
+
+        {/* Footer */}
+        <footer className="py-12 border-t border-gray-200 dark:border-dark-border">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xl">স</span>
+              </div>
+              <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                সমাধা
+              </span>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 mb-2">
+              ব্রাহ্মণবাড়িয়ার জনগণের জন্য ডিজিটাল অভিযোগ ব্যবস্থাপনা প্ল্যাটফর্ম
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-500">
+              © {new Date().getFullYear()} সমাধা। সর্বস্বত্ব সংরক্ষিত।
+            </p>
+          </div>
+        </footer>
       </main>
+
+      <BottomNav />
     </div>
   );
 }

@@ -1,37 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# সমাধা - Complaint Management System
+
+ব্রাহ্মণবাড়িয়ার জনগণের জন্য ডিজিটাল অভিযোগ ব্যবস্থাপনা প্ল্যাটফর্ম
+
+## Features
+
+- 🔐 Google OAuth Authentication
+- 📝 Complaint submission with image upload
+- 📊 Real-time complaint tracking
+- 👥 Multi-role admin panel (Developer, Politician, Agent)
+- 📱 Mobile-responsive design
+- 🌙 Dark mode support
+- 🎨 Beautiful UI with Tailwind CSS
+- ⚡ Fast performance with Next.js 14
+
+## Tech Stack
+
+- **Framework:** Next.js 14 (App Router)
+- **Language:** JavaScript
+- **Styling:** Tailwind CSS
+- **Database:** Neon PostgreSQL
+- **Authentication:** NextAuth.js
+- **Image Upload:** Cloudinary
+- **Deployment:** Vercel
+- **Animations:** Framer Motion
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm or yarn
+- Neon database account
+- Google OAuth credentials
+- Cloudinary account
+
+### Installation
+
+1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <your-repo-url>
+cd somadha
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+3. Set up environment variables
+Create a `.env.local` file in the root directory:
+```env
+DATABASE_URL=your_neon_database_url
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_secret_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+DEVELOPER_PASSWORD=your_developer_password
+POLITICIAN_PASSWORD=your_politician_password
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Initialize database
+```bash
+npm run setup-db
+```
 
-## Learn More
+5. Run development server
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
+```
+somadha/
+├── src/
+│   ├── app/              # Next.js app router pages
+│   ├── components/       # React components
+│   ├── lib/              # Utility functions and database
+│   ├── hooks/            # Custom React hooks
+│   └── constants/        # Constants and configurations
+├── public/               # Static files
+└── ...config files
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+### Deploy to Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Push your code to GitHub
+2. Import your repository in Vercel
+3. Add all environment variables
+4. Deploy!
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-"# somadha" 
+## Default Admin Credentials
+
+- **Developer:** developer@somadha.com / admin123
+- **Politician:** politician@somadha.com / admin123
+
+⚠️ **Change these in production!**
+
+## License
+
+© 2025 সমাধা. All rights reserved.
