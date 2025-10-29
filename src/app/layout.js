@@ -9,7 +9,12 @@ export const metadata = {
   description: 'ব্রাহ্মণবাড়িয়ার জনগণের জন্য ডিজিটাল অভিযোগ ব্যবস্থাপনা প্ল্যাটফর্ম',
   keywords: 'সমাধা, ব্রাহ্মণবাড়িয়া, অভিযোগ, complaint, Bangladesh',
   authors: [{ name: 'সমাধা টিম' }],
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
   themeColor: '#FF6B35',
 };
 

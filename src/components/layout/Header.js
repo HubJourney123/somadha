@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession, signOut } from 'next-auth/react';
-import { FiSun, FiMoon, FiUser, FiLogOut } from 'react-icons/fi';
+import { useSession, signOut, signIn } from 'next-auth/react';
+import { FiSun, FiMoon, FiUser, FiLogOut, FiLogIn } from 'react-icons/fi';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [isDark, setIsDark] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -34,18 +36,21 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-white dark:bg-dark-card border-b border-gray-200 dark:border-dark-border backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90">
+    <header className="sticky top-0 z-30 bg-white dark:bg-[#1A1A1A] border-b border-gray-200 dark:border-[#2A2A2A] backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90">
       <div className="container-padding">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center gap-2">
+          <button 
+            onClick={() => router.push('/')}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-xl">স</span>
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">
               সমাধা
             </span>
-          </div>
+          </button>
 
           {/* Right side */}
           <div className="flex items-center gap-3">
@@ -62,8 +67,12 @@ export default function Header() {
               )}
             </button>
 
-            {/* User menu */}
-            {session?.user && (
+            {/* User Section */}
+            {status === 'loading' ? (
+              // Loading state
+              <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+            ) : session?.user ? (
+              // Logged in - show user menu
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
@@ -91,8 +100,8 @@ export default function Header() {
                       className="fixed inset-0 z-10"
                       onClick={() => setShowUserMenu(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-dark-card rounded-lg shadow-lg border border-gray-200 dark:border-dark-border py-2 z-20">
-                      <div className="px-4 py-2 border-b border-gray-200 dark:border-dark-border">
+                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#1A1A1A] rounded-lg shadow-lg border border-gray-200 dark:border-[#2A2A2A] py-2 z-20">
+                      <div className="px-4 py-2 border-b border-gray-200 dark:border-[#2A2A2A]">
                         <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                           {session.user.name}
                         </p>
@@ -100,8 +109,25 @@ export default function Header() {
                           {session.user.email}
                         </p>
                       </div>
+
                       <button
-                        onClick={() => signOut()}
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          router.push('/dashboard');
+                        }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      >
+                        <FiUser className="w-4 h-4" />
+                        আমার ড্যাশবোর্ড
+                      </button>
+
+                      <div className="border-t border-gray-200 dark:border-[#2A2A2A] my-1" />
+
+                      <button
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          signOut({ callbackUrl: '/' });
+                        }}
                         className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                       >
                         <FiLogOut className="w-4 h-4" />
@@ -111,6 +137,15 @@ export default function Header() {
                   </>
                 )}
               </div>
+            ) : (
+              // Not logged in - show sign in button
+              <button
+                onClick={() => signIn('google')}
+                className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg transition-colors text-sm"
+              >
+                <FiLogIn className="w-4 h-4" />
+                <span className="hidden sm:inline">সাইন ইন</span>
+              </button>
             )}
           </div>
         </div>
