@@ -1,322 +1,253 @@
 'use client';
 
 import { useState } from 'react';
-import { FiPlus, FiEdit2, FiTrash2, FiEye, FiEyeOff } from 'react-icons/fi';
+import { motion } from 'framer-motion';
+import { FiUserPlus, FiEdit2, FiTrash2, FiCheck, FiX } from 'react-icons/fi';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Select from '@/components/ui/Select';
 import Modal from '@/components/ui/Modal';
+import { UPAZILAS } from '@/constants/locations';
 
-export default function AgentManager({ agents = [], onRefresh }) {
+export default function AgentManager({ agents, onRefresh }) {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedAgent, setSelectedAgent] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-
   const [formData, setFormData] = useState({
     username: '',
     password: '',
-    fullName: '',
+    name: '',
+    email: '',
     phone: '',
-    email: ''
+    upazila: ''
   });
 
-  const resetForm = () => {
-    setFormData({
-      username: '',
-      password: '',
-      fullName: '',
-      phone: '',
-      email: ''
-    });
-    setShowPassword(false);
-  };
-
-  const handleCreate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const response = await fetch('/api/admin/agents', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create agent');
+      if (response.ok) {
+        alert('এজেন্ট সফলভাবে তৈরি হয়েছে!');
+        setShowCreateModal(false);
+        setFormData({
+          username: '',
+          password: '',
+          name: '',
+          email: '',
+          phone: '',
+          upazila: ''
+        });
+        onRefresh();
+      } else {
+        alert(data.error || 'এজেন্ট তৈরি করতে সমস্যা হয়েছে');
       }
-
-      alert('এজেন্ট সফলভাবে তৈরি হয়েছে!');
-      setShowCreateModal(false);
-      resetForm();
-      onRefresh();
     } catch (error) {
       console.error('Error creating agent:', error);
-      alert(error.message || 'এজেন্ট তৈরি করতে সমস্যা হয়েছে');
+      alert('এজেন্ট তৈরি করতে সমস্যা হয়েছে');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const updateData = {
-        agentId: selectedAgent.id,
-        fullName: formData.fullName,
-        phone: formData.phone,
-        email: formData.email
-      };
-
-      if (formData.password) {
-        updateData.password = formData.password;
-      }
-
-      const response = await fetch('/api/admin/agents', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateData)
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to update agent');
-      }
-
-      alert('এজেন্ট সফলভাবে আপডেট হয়েছে!');
-      setShowEditModal(false);
-      setSelectedAgent(null);
-      resetForm();
-      onRefresh();
-    } catch (error) {
-      console.error('Error updating agent:', error);
-      alert(error.message || 'এজেন্ট আপডেট করতে সমস্যা হয়েছে');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (agentId) => {
-    if (!confirm('আপনি কি নিশ্চিত এই এজেন্টকে মুছে ফেলতে চান?')) {
+  const toggleAgentStatus = async (id, currentStatus) => {
+    if (!confirm(`এজেন্ট ${currentStatus ? 'নিষ্ক্রিয়' : 'সক্রিয়'} করতে চান?`)) {
       return;
     }
 
     try {
-      const response = await fetch(`/api/admin/agents?id=${agentId}`, {
-        method: 'DELETE'
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to delete agent');
-      }
-
-      alert('এজেন্ট সফলভাবে মুছে ফেলা হয়েছে!');
-      onRefresh();
-    } catch (error) {
-      console.error('Error deleting agent:', error);
-      alert(error.message || 'এজেন্ট মুছে ফেলতে সমস্যা হয়েছে');
-    }
-  };
-
-  const handleToggleStatus = async (agent) => {
-    try {
       const response = await fetch('/api/admin/agents', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          agentId: agent.id,
-          isActive: !agent.is_active
-        })
+          id,
+          is_active: !currentStatus
+        }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to update agent status');
+      if (response.ok) {
+        alert('এজেন্ট স্ট্যাটাস আপডেট হয়েছে!');
+        onRefresh();
+      } else {
+        alert('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে');
       }
-
-      onRefresh();
     } catch (error) {
-      console.error('Error toggling agent status:', error);
-      alert('স্ট্যাটাস পরিবর্তন করতে সমস্যা হয়েছে');
+      console.error('Error updating agent:', error);
+      alert('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে');
     }
   };
 
-  const openEditModal = (agent) => {
-    setSelectedAgent(agent);
-    setFormData({
-      username: agent.username,
-      password: '',
-      fullName: agent.full_name,
-      phone: agent.phone || '',
-      email: agent.email || ''
-    });
-    setShowEditModal(true);
+  const deleteAgent = async (id) => {
+    if (!confirm('এই এজেন্ট মুছে ফেলতে চান? এটি পুনরুদ্ধার করা যাবে না।')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/agents?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        alert('এজেন্ট মুছে ফেলা হয়েছে!');
+        onRefresh();
+      } else {
+        alert('এজেন্ট মুছতে সমস্যা হয়েছে');
+      }
+    } catch (error) {
+      console.error('Error deleting agent:', error);
+      alert('এজেন্ট মুছতে সমস্যা হয়েছে');
+    }
   };
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
           এজেন্ট ব্যবস্থাপনা
         </h2>
         <Button
           variant="primary"
           onClick={() => setShowCreateModal(true)}
         >
-          <FiPlus className="w-5 h-5" />
-          নতুন এজেন্ট যোগ করুন
+          <FiUserPlus className="w-5 h-5" />
+          নতুন এজেন্ট তৈরি করুন
         </Button>
       </div>
 
-      {/* Agents List */}
-      <div className="card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-800">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                  ব্যবহারকারীর নাম
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                  পুরো নাম
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                  ফোন
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                  ইমেইল
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                  স্ট্যাটাস
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                  অ্যাকশন
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-dark-border">
-              {agents.length === 0 ? (
+      {agents.length === 0 ? (
+        <div className="card p-12 text-center">
+          <p className="text-gray-600 dark:text-gray-400">
+            কোনো এজেন্ট পাওয়া যায়নি
+          </p>
+        </div>
+      ) : (
+        <div className="card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-dark-card border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <td colSpan="6" className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                    কোনো এজেন্ট পাওয়া যায়নি
-                  </td>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    নাম
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    ইউজারনেম
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    উপজেলা
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    ফোন
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    স্ট্যাটাস
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    অ্যাকশন
+                  </th>
                 </tr>
-              ) : (
-                agents.map((agent) => (
-                  <tr 
-                    key={agent.id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
+              </thead>
+              <tbody className="bg-white dark:bg-dark-bg divide-y divide-gray-200 dark:divide-gray-700">
+                {agents.map((agent) => (
+                  <tr key={agent.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {agent.name}
+                      </div>
+                      {agent.email && (
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {agent.email}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       {agent.username}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                      {agent.full_name}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {agent.upazila || '-'}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       {agent.phone || '-'}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                      {agent.email || '-'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <button
-                        onClick={() => handleToggleStatus(agent)}
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                           agent.is_active
-                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                            : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                            : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
                         }`}
                       >
                         {agent.is_active ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                      <button
+                        onClick={() => toggleAgentStatus(agent.id, agent.is_active)}
+                        className={`p-2 rounded-lg transition-colors ${
+                          agent.is_active
+                            ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20'
+                            : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
+                        }`}
+                        title={agent.is_active ? 'নিষ্ক্রিয় করুন' : 'সক্রিয় করুন'}
+                      >
+                        {agent.is_active ? <FiX className="w-5 h-5" /> : <FiCheck className="w-5 h-5" />}
+                      </button>
+                      <button
+                        onClick={() => deleteAgent(agent.id)}
+                        className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        title="মুছে ফেলুন"
+                      >
+                        <FiTrash2 className="w-5 h-5" />
                       </button>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => openEditModal(agent)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                          title="সম্পাদনা করুন"
-                        >
-                          <FiEdit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(agent.id)}
-                          className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                          title="মুছে ফেলুন"
-                        >
-                          <FiTrash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Create Agent Modal */}
       <Modal
         isOpen={showCreateModal}
-        onClose={() => {
-          setShowCreateModal(false);
-          resetForm();
-        }}
-        title="নতুন এজেন্ট যোগ করুন"
+        onClose={() => setShowCreateModal(false)}
+        title="নতুন এজেন্ট তৈরি করুন"
       >
-        <form onSubmit={handleCreate} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <Input
-            label="ব্যবহারকারীর নাম"
+            label="ইউজারনেম *"
             required
             value={formData.username}
             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-            placeholder="username"
+            placeholder="agent123"
           />
 
-          <div className="relative">
-            <Input
-              label="পাসওয়ার্ড"
-              type={showPassword ? 'text' : 'password'}
-              required
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              placeholder="••••••••"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            >
-              {showPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
-            </button>
-          </div>
-
           <Input
-            label="পুরো নাম"
+            label="পাসওয়ার্ড *"
+            type="password"
             required
-            value={formData.fullName}
-            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-            placeholder="এজেন্টের পুরো নাম"
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            placeholder="••••••••"
           />
 
           <Input
-            label="ফোন নম্বর"
-            type="tel"
-            value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            placeholder="01XXXXXXXXX"
+            label="নাম *"
+            required
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            placeholder="এজেন্টের পূর্ণ নাম"
           />
 
           <Input
@@ -327,83 +258,22 @@ export default function AgentManager({ agents = [], onRefresh }) {
             placeholder="agent@example.com"
           />
 
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="button"
-              variant="secondary"
-              fullWidth
-              onClick={() => {
-                setShowCreateModal(false);
-                resetForm();
-              }}
-            >
-              বাতিল
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              fullWidth
-              loading={loading}
-            >
-              তৈরি করুন
-            </Button>
-          </div>
-        </form>
-      </Modal>
-
-      {/* Edit Agent Modal */}
-      <Modal
-        isOpen={showEditModal}
-        onClose={() => {
-          setShowEditModal(false);
-          setSelectedAgent(null);
-          resetForm();
-        }}
-        title="এজেন্ট সম্পাদনা করুন"
-      >
-        <form onSubmit={handleEdit} className="space-y-4">
           <Input
-            label="ব্যবহারকারীর নাম"
-            value={formData.username}
-            disabled
-          />
-
-          <div className="relative">
-            <Input
-              label="নতুন পাসওয়ার্ড (ঐচ্ছিক)"
-              type={showPassword ? 'text' : 'password'}
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              placeholder="পরিবর্তন করতে চাইলে লিখুন"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            >
-              {showPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
-            </button>
-          </div>
-
-          <Input
-            label="পুরো নাম"
-            required
-            value={formData.fullName}
-            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-          />
-
-          <Input
-            label="ফোন নম্বর"
+            label="ফোন"
             type="tel"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            placeholder="01712345678"
           />
 
-          <Input
-            label="ইমেইল"
-            type="email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          <Select
+            label="উপজেলা"
+            value={formData.upazila}
+            onChange={(e) => setFormData({ ...formData, upazila: e.target.value })}
+            options={[
+              { value: '', label: 'উপজেলা নির্বাচন করুন' },
+              ...UPAZILAS.map(u => ({ value: u, label: u }))
+            ]}
           />
 
           <div className="flex gap-3 pt-4">
@@ -411,11 +281,7 @@ export default function AgentManager({ agents = [], onRefresh }) {
               type="button"
               variant="secondary"
               fullWidth
-              onClick={() => {
-                setShowEditModal(false);
-                setSelectedAgent(null);
-                resetForm();
-              }}
+              onClick={() => setShowCreateModal(false)}
             >
               বাতিল
             </Button>
@@ -425,7 +291,7 @@ export default function AgentManager({ agents = [], onRefresh }) {
               fullWidth
               loading={loading}
             >
-              আপডেট করুন
+              এজেন্ট তৈরি করুন
             </Button>
           </div>
         </form>

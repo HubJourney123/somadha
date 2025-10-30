@@ -1,15 +1,15 @@
-import { NextResponse } from 'next/server';
+import { sql } from '@/lib/db';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
-import { createAgent, getAllAgents, updateAgent, deleteAgent } from '@/lib/db';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 
 // GET - Fetch all agents
-export async function GET(request) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
-    // Only developer and politician can access
+    // Check if user is admin
     if (!session || !['developer', 'politician'].includes(session.user.role)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -17,7 +17,19 @@ export async function GET(request) {
       );
     }
 
-    const agents = await getAllAgents();
+    const agents = await sql`
+      SELECT 
+        id,
+        username,
+        name,
+        email,
+        phone,
+        upazila,
+        is_active,
+        created_at
+      FROM agents
+      ORDER BY created_at DESC
+    `;
 
     return NextResponse.json({
       success: true,
@@ -37,7 +49,7 @@ export async function POST(request) {
   try {
     const session = await getServerSession(authOptions);
 
-    // Only developer and politician can create agents
+    // Check if user is admin
     if (!session || !['developer', 'politician'].includes(session.user.role)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -46,44 +58,75 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { username, password, fullName, phone, email } = body;
+    const { username, password, name, email, phone, upazila } = body;
 
-    // Validation
-    if (!username || !password || !fullName) {
+    // Validate required fields
+    if (!username || !password || !name) {
       return NextResponse.json(
-        { success: false, error: 'Username, password, and full name are required' },
+        { success: false, error: 'Username, password, and name are required' },
         { status: 400 }
       );
+    }
+
+    // Check if username already exists
+    const existingAgent = await sql`
+      SELECT id FROM agents WHERE username = ${username}
+    `;
+
+    if (existingAgent.length > 0) {
+      return NextResponse.json(
+        { success: false, error: 'Username already exists' },
+        { status: 400 }
+      );
+    }
+
+    // Check if email already exists (if provided)
+    if (email) {
+      const existingEmail = await sql`
+        SELECT id FROM agents WHERE email = ${email}
+      `;
+
+      if (existingEmail.length > 0) {
+        return NextResponse.json(
+          { success: false, error: 'Email already exists' },
+          { status: 400 }
+        );
+      }
     }
 
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const agent = await createAgent({
-      username,
-      passwordHash,
-      fullName,
-      phone: phone || null,
-      email: email || null,
-      createdByAdminId: parseInt(session.user.id),
-      createdByRole: session.user.role
-    });
+    // Create agent
+    const result = await sql`
+      INSERT INTO agents (
+        username,
+        password_hash,
+        name,
+        email,
+        phone,
+        upazila,
+        is_active
+      )
+      VALUES (
+        ${username},
+        ${passwordHash},
+        ${name},
+        ${email || null},
+        ${phone || null},
+        ${upazila || null},
+        true
+      )
+      RETURNING id, username, name, email, phone, upazila, is_active, created_at
+    `;
 
     return NextResponse.json({
       success: true,
-      data: agent,
-      message: 'Agent created successfully'
-    }, { status: 201 });
+      message: 'Agent created successfully',
+      data: result[0]
+    });
   } catch (error) {
     console.error('Error creating agent:', error);
-    
-    if (error.message?.includes('duplicate key')) {
-      return NextResponse.json(
-        { success: false, error: 'Username already exists' },
-        { status: 409 }
-      );
-    }
-
     return NextResponse.json(
       { success: false, error: 'Failed to create agent' },
       { status: 500 }
@@ -91,7 +134,7 @@ export async function POST(request) {
   }
 }
 
-// PATCH - Update agent
+// PATCH - Update agent (activate/deactivate)
 export async function PATCH(request) {
   try {
     const session = await getServerSession(authOptions);
@@ -104,31 +147,24 @@ export async function PATCH(request) {
     }
 
     const body = await request.json();
-    const { agentId, fullName, phone, email, isActive, password } = body;
+    const { id, is_active } = body;
 
-    if (!agentId) {
+    if (!id || is_active === undefined) {
       return NextResponse.json(
-        { success: false, error: 'Agent ID is required' },
+        { success: false, error: 'Agent ID and status are required' },
         { status: 400 }
       );
     }
 
-    const updateData = {};
-    if (fullName !== undefined) updateData.fullName = fullName;
-    if (phone !== undefined) updateData.phone = phone;
-    if (email !== undefined) updateData.email = email;
-    if (isActive !== undefined) updateData.isActive = isActive;
-    
-    if (password) {
-      updateData.passwordHash = await bcrypt.hash(password, 10);
-    }
-
-    const agent = await updateAgent(agentId, updateData);
+    await sql`
+      UPDATE agents
+      SET is_active = ${is_active}
+      WHERE id = ${id}
+    `;
 
     return NextResponse.json({
       success: true,
-      data: agent,
-      message: 'Agent updated successfully'
+      message: 'Agent status updated successfully'
     });
   } catch (error) {
     console.error('Error updating agent:', error);
@@ -144,24 +180,26 @@ export async function DELETE(request) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || !['developer', 'politician'].includes(session.user.role)) {
+    if (!session || session.user.role !== 'developer') {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
+        { success: false, error: 'Unauthorized - Only developers can delete agents' },
         { status: 401 }
       );
     }
 
     const { searchParams } = new URL(request.url);
-    const agentId = searchParams.get('id');
+    const id = searchParams.get('id');
 
-    if (!agentId) {
+    if (!id) {
       return NextResponse.json(
         { success: false, error: 'Agent ID is required' },
         { status: 400 }
       );
     }
 
-    await deleteAgent(parseInt(agentId));
+    await sql`
+      DELETE FROM agents WHERE id = ${id}
+    `;
 
     return NextResponse.json({
       success: true,

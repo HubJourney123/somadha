@@ -1,3 +1,7 @@
 git add .
 git commit -m "Alhamdulillah"
 git push
+
+
+'Developer: developer@somadha.com / admin123'
+'Politician: politician@somadha.com / admin123'
