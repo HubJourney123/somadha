@@ -58,7 +58,7 @@ export default function SplashScreen({ onComplete }) {
             playsInline
             loop
             className="max-w-full max-h-full object-contain"
-            style={{ maxWidth: '600px', maxHeight: '600px' }}
+            style={{ maxWidth: '200px', maxHeight: '200px' }}
           >
             <source src="/splash.mp4" type="video/mp4" />
             {/* Fallback for browsers that don't support video */}
