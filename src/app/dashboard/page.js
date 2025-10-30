@@ -154,9 +154,9 @@ export default function DashboardPage() {
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={() => viewComplaintDetails(searchResult)}
+                    onClick={() => router.push(`/track/${searchResult.unique_id}`)}
                   >
-                    বিস্তারিত দেখুন
+                    ট্র্যাকিং দেখুন
                   </Button>
                 </motion.div>
               )}
