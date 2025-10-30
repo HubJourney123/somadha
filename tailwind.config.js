@@ -10,9 +10,9 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#CC785C',        // Claude AI orange
-          light: '#E5A892',          // Lighter shade
-          dark: '#B3654A',           // Darker shade
+          DEFAULT: '#ff9248',        // Main orange
+          light: '#ffb38a',          // Light orange
+          dark: '#e67d32',           // Dark orange (hover)
         },
         secondary: {
           DEFAULT: '#FFF5F0',

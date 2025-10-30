@@ -5,8 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function SplashScreen({ onComplete }) {
   const [isVisible, setIsVisible] = useState(true);
-  const [videoEnded, setVideoEnded] = useState(false);
-  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
   useEffect(() => {
     // Check if splash was already shown in this session
@@ -19,29 +17,14 @@ export default function SplashScreen({ onComplete }) {
       return;
     }
 
-    // Minimum display time - 2 seconds
-    const minTimer = setTimeout(() => {
-      console.log('Minimum time elapsed');
-      setMinTimeElapsed(true);
-    }, 2000);
+    // Always show for exactly 2 seconds
+    const timer = setTimeout(() => {
+      console.log('2 seconds elapsed - hiding splash');
+      hideSplash();
+    }, 2000); // Exactly 2 seconds
 
-    return () => clearTimeout(minTimer);
+    return () => clearTimeout(timer);
   }, [onComplete]);
-
-  // Check if we should hide splash when both conditions are met
-  useEffect(() => {
-    if (videoEnded && minTimeElapsed) {
-      console.log('Video ended AND min time elapsed - hiding splash');
-      setTimeout(() => {
-        hideSplash();
-      }, 500); // Small delay for smooth transition
-    }
-  }, [videoEnded, minTimeElapsed]);
-
-  const handleVideoEnd = () => {
-    console.log('Video ended');
-    setVideoEnded(true);
-  };
 
   const hideSplash = () => {
     console.log('Hiding splash screen');
@@ -61,7 +44,7 @@ export default function SplashScreen({ onComplete }) {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
         className="fixed inset-0 z-50 flex items-center justify-center"
-        style={{ backgroundColor: '#CC785C' }}
+        style={{ backgroundColor: '#ff9248' }}
       >
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
@@ -73,12 +56,12 @@ export default function SplashScreen({ onComplete }) {
             autoPlay
             muted
             playsInline
-            onEnded={handleVideoEnd}
+            loop
             className="max-w-full max-h-full object-contain"
             style={{ maxWidth: '600px', maxHeight: '600px' }}
           >
-            <source src="/splash.webm" type="video/webm" />
-            {/* Fallback for browsers that don't support WebM */}
+            <source src="/splash.mp4" type="video/mp4" />
+            {/* Fallback for browsers that don't support video */}
             <div className="text-white text-center">
               <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <span className="text-primary font-bold text-4xl">স</span>
@@ -108,14 +91,6 @@ export default function SplashScreen({ onComplete }) {
             />
           </div>
         </div>
-
-        {/* Debug info (remove in production) */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="absolute top-4 left-4 text-white text-xs bg-black/30 p-2 rounded">
-            <div>Video Ended: {videoEnded ? '✓' : '✗'}</div>
-            <div>Min Time: {minTimeElapsed ? '✓' : '✗'}</div>
-          </div>
-        )}
       </motion.div>
     </AnimatePresence>
   );

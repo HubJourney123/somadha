@@ -23,7 +23,7 @@
   }
 
   .btn-primary {
-    @apply bg-[#CC785C] hover:bg-[#B3654A] text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-[#ff9248] hover:bg-[#e67d32] text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
@@ -31,15 +31,15 @@
   }
 
   .input-field {
-    @apply w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-[#2A2A2A] bg-white dark:bg-[#1A1A1A] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#CC785C] focus:border-transparent transition-all duration-200;
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-[#2A2A2A] bg-white dark:bg-[#1A1A1A] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff9248] focus:border-transparent transition-all duration-200;
   }
 
   .select-field {
-    @apply w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-[#2A2A2A] bg-white dark:bg-[#1A1A1A] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#CC785C] focus:border-transparent transition-all duration-200 appearance-none cursor-pointer;
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-[#2A2A2A] bg-white dark:bg-[#1A1A1A] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff9248] focus:border-transparent transition-all duration-200 appearance-none cursor-pointer;
   }
 
   .textarea-field {
-    @apply w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-[#2A2A2A] bg-white dark:bg-[#1A1A1A] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#CC785C] focus:border-transparent transition-all duration-200 resize-none;
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-[#2A2A2A] bg-white dark:bg-[#1A1A1A] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff9248] focus:border-transparent transition-all duration-200 resize-none;
   }
 
   .label {
@@ -108,9 +108,9 @@
 
 /* Loading spinner */
 .spinner {
-  border: 3px solid rgba(204, 120, 92, 0.1);
+  border: 3px solid rgba(255, 146, 72, 0.1);
   border-radius: 50%;
-  border-top: 3px solid #CC785C;
+  border-top: 3px solid #ff9248;
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
