@@ -32,14 +32,16 @@ async function setupDatabase() {
     `;
     
     // Add sample carousel images (optional)
-    await sql`
-      INSERT INTO carousel_images (image_url, title, display_order, is_active)
-      VALUES 
-        ('https://via.placeholder.com/800x400/FF6B35/ffffff?text=স্বাগতম+সমাধায়', 'স্বাগতম সমাধায়', 1, true),
-        ('https://via.placeholder.com/800x400/FFB399/ffffff?text=আপনার+সমস্যা+আমাদের+দায়িত্ব', 'আপনার সমস্যা আমাদের দায়িত্ব', 2, true),
-        ('https://via.placeholder.com/800x400/CC5529/ffffff?text=একসাথে+গড়ি+উন্নত+ব্রাহ্মণবাড়িয়া', 'একসাথে গড়ি উন্নত ব্রাহ্মণবাড়িয়া', 3, true)
-      ON CONFLICT DO NOTHING
-    `;
+await sql`
+  INSERT INTO carousel_images (image_url, title, display_order, is_active)
+  VALUES 
+    ('/carousel/C1.svg', 'স্বাগতম সমাধায়', 1, true),
+    ('/carousel/C2.svg', 'আপনার সমস্যা আমাদের দায়িত্ব', 2, true),
+    ('/carousel/C3.svg', 'একসাথে গড়ি উন্নত ব্রাহ্মণবাড়িয়া', 3, true),
+    ('/carousel/C4.svg', 'দ্রুত সমাধান, স্বচ্ছ প্রক্রিয়া', 4, true)
+  ON CONFLICT DO NOTHING
+`;
+
     
     console.log('\n✅ Database setup completed successfully!');
     console.log('\n📋 Default credentials:');

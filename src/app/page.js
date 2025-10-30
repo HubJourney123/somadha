@@ -51,6 +51,8 @@ export default function HomePage() {
       <main className="container-padding with-bottom-nav">
         {/* Hero Section */}
         <section className="py-8 space-y-6">
+           {/* Carousel */}
+          <Carousel images={carouselImages} />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -60,7 +62,7 @@ export default function HomePage() {
               স্বাগতম <span className="text-primary">সমাধা</span>য়
             </h1>
             <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-8">
-              আপনার সমস্যা জানান, সমাধান পান। একসাথে গড়ি উন্নত ব্রাহ্মণবাড়িয়া।
+              আপনার সমস্যা জানান, সমাধান পান।
             </p>
 
             {/* Show user greeting if logged in */}
@@ -82,7 +84,7 @@ export default function HomePage() {
                 // Not logged in - show sign in and post complaint
                 <>
                   <Button
-                    variant="primary"
+                    variant="outline"
                     size="lg"
                     onClick={() => signIn('google')}
                   >
@@ -122,8 +124,7 @@ export default function HomePage() {
             </div>
           </motion.div>
 
-          {/* Carousel */}
-          <Carousel images={carouselImages} />
+         
         </section>
 
         {/* Stats Section */}

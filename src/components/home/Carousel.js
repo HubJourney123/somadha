@@ -5,30 +5,33 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
-export default function Carousel({ images = [] }) {
+export default function Carousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
-  // Default images if none provided
-  const defaultImages = [
+  // Local SVG images only
+  const slides = [
     {
       id: 1,
-      image_url: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&h=400&fit=crop',
+      image_url: '/carousel/C1.svg',
       title: 'স্বাগতম সমাধায়'
     },
     {
       id: 2,
-      image_url: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=800&h=400&fit=crop',
+      image_url: '/carousel/C2.svg',
       title: 'আপনার সমস্যা আমাদের দায়িত্ব'
     },
     {
       id: 3,
-      image_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=400&fit=crop',
+      image_url: '/carousel/C3.svg',
       title: 'একসাথে গড়ি উন্নত ব্রাহ্মণবাড়িয়া'
+    },
+    {
+      id: 4,
+      image_url: '/carousel/C4.svg',
+      title: 'দ্রুত সমাধান, স্বচ্ছ প্রক্রিয়া'
     }
   ];
-
-  const slides = images.length > 0 ? images : defaultImages;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -67,7 +70,7 @@ export default function Carousel({ images = [] }) {
   };
 
   return (
-    <div className="relative w-full h-64 md:h-80 lg:h-96 rounded-2xl overflow-hidden bg-gray-200 dark:bg-dark-card group">
+    <div className="relative w-full rounded-2xl overflow-hidden bg-gray-200 dark:bg-dark-card group" style={{ aspectRatio: '640/200' }}>
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={currentIndex}
@@ -86,14 +89,15 @@ export default function Carousel({ images = [] }) {
             src={slides[currentIndex].image_url}
             alt={slides[currentIndex].title || 'Carousel image'}
             fill
-            className="object-cover"
-            priority
+            className="object-contain"
+            priority={currentIndex === 0}
+            unoptimized
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          
           {slides[currentIndex].title && (
-            <div className="absolute bottom-0 left-0 right-0 p-6">
-              <h3 className="text-white text-2xl md:text-3xl font-bold">
-                {slides[currentIndex].title}
+            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+              <h3 className="text-white text-lg md:text-2xl font-bold drop-shadow-lg">
+                
               </h3>
             </div>
           )}
@@ -103,20 +107,22 @@ export default function Carousel({ images = [] }) {
       {/* Navigation buttons */}
       <button
         onClick={goToPrev}
-        className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 dark:bg-dark-card/80 text-gray-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white dark:hover:bg-dark-card"
+        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 p-1.5 md:p-2 rounded-full bg-white/80 dark:bg-dark-card/80 text-gray-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white dark:hover:bg-dark-card"
+        aria-label="Previous slide"
       >
-        <FiChevronLeft className="w-6 h-6" />
+        <FiChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
       </button>
 
       <button
         onClick={goToNext}
-        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 dark:bg-dark-card/80 text-gray-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white dark:hover:bg-dark-card"
+        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 p-1.5 md:p-2 rounded-full bg-white/80 dark:bg-dark-card/80 text-gray-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white dark:hover:bg-dark-card"
+        aria-label="Next slide"
       >
-        <FiChevronRight className="w-6 h-6" />
+        <FiChevronRight className="w-5 h-5 md:w-6 md:h-6" />
       </button>
 
       {/* Indicators */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-2 md:bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
         {slides.map((_, index) => (
           <button
             key={index}
@@ -124,11 +130,12 @@ export default function Carousel({ images = [] }) {
               setDirection(index > currentIndex ? 1 : -1);
               setCurrentIndex(index);
             }}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+            className={`h-1.5 md:h-2 rounded-full transition-all duration-300 ${
               index === currentIndex
-                ? 'bg-white w-8'
-                : 'bg-white/50 hover:bg-white/75'
+                ? 'bg-white w-6 md:w-8'
+                : 'bg-white/50 hover:bg-white/75 w-1.5 md:w-2'
             }`}
+            aria-label={`Go to slide ${index + 1}`}
           />
         ))}
       </div>
