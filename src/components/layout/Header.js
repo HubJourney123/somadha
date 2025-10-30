@@ -44,9 +44,14 @@ export default function Header() {
             onClick={() => router.push('/')}
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">স</span>
-            </div>
+            <Image
+              src="/images/logo.svg"
+              alt="সমাধা"
+              width={40}
+              height={40}
+              className="w-10 h-10"
+              unoptimized
+            />
             <span className="text-xl font-bold text-gray-900 dark:text-white">
               সমাধা
             </span>

@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
@@ -17,23 +16,6 @@ import { motion } from 'framer-motion';
 export default function HomePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [carouselImages, setCarouselImages] = useState([]);
-
-  useEffect(() => {
-    fetchCarouselImages();
-  }, []);
-
-  const fetchCarouselImages = async () => {
-    try {
-      const response = await fetch('/api/carousel');
-      if (response.ok) {
-        const data = await response.json();
-        setCarouselImages(data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching carousel images:', error);
-    }
-  };
 
   // Show loading while checking authentication status
   if (status === 'loading') {
@@ -50,18 +32,26 @@ export default function HomePage() {
       
       <main className="container-padding with-bottom-nav">
         {/* Hero Section */}
-        <section className="py-8 space-y-6">
-           {/* Carousel */}
-          <Carousel images={carouselImages} />
+        <section className="py-6 space-y-6">
+          {/* Carousel at top */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+          >
+            <Carousel />
+          </motion.div>
+
+          {/* Hero Text */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            <h1 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3">
               স্বাগতম <span className="text-primary">সমাধা</span>য়
             </h1>
-            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-8">
+            <p className="text-base md:text-xl text-gray-600 dark:text-gray-400 mb-6">
               আপনার সমস্যা জানান, সমাধান পান।
             </p>
 
@@ -78,26 +68,28 @@ export default function HomePage() {
               </motion.div>
             )}
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {/* CTA Buttons - Side by side on mobile */}
+            <div className="flex flex-row gap-3 justify-center items-center">
               {!session ? (
                 // Not logged in - show sign in and post complaint
                 <>
                   <Button
-                    variant="outline"
+                    variant="primary"
                     size="lg"
                     onClick={() => signIn('google')}
+                    className="flex-1 max-w-xs"
                   >
-                    <FiLogIn className="w-5 h-5" />
-                    Google দিয়ে সাইন ইন করুন
+                    <FiLogIn className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="text-sm md:text-base">Google সাইন ইন</span>
                   </Button>
                   <Button
                     variant="secondary"
                     size="lg"
                     onClick={() => router.push('/post-complaint')}
+                    className="flex-1 max-w-xs"
                   >
-                    অভিযোগ পোস্ট করুন
-                    <FiArrowRight className="w-5 h-5" />
+                    <span className="text-sm md:text-base">অভিযোগ পোস্ট</span>
+                    <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
                   </Button>
                 </>
               ) : (
@@ -107,38 +99,38 @@ export default function HomePage() {
                     variant="primary"
                     size="lg"
                     onClick={() => router.push('/post-complaint')}
+                    className="flex-1 max-w-xs"
                   >
-                    অভিযোগ পোস্ট করুন
-                    <FiArrowRight className="w-5 h-5" />
+                    <span className="text-sm md:text-base">অভিযোগ পোস্ট</span>
+                    <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
                   </Button>
                   <Button
                     variant="secondary"
                     size="lg"
                     onClick={() => router.push('/dashboard')}
+                    className="flex-1 max-w-xs"
                   >
-                    আমার ড্যাশবোর্ড
-                    <FiArrowRight className="w-5 h-5" />
+                    <span className="text-sm md:text-base">ড্যাশবোর্ড</span>
+                    <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
                   </Button>
                 </>
               )}
             </div>
           </motion.div>
-
-         
         </section>
 
         {/* Stats Section */}
-        <section className="py-12">
+        <section className="py-8">
           <StatsSection />
         </section>
 
         {/* About Section */}
-        <section className="py-12">
+        <section className="py-8">
           <AboutSection />
         </section>
 
         {/* Activities Section */}
-        <section className="py-12">
+        <section className="py-8">
           <ActivitiesSection />
         </section>
 
