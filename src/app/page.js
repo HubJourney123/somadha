@@ -70,7 +70,7 @@ export default function HomePage() {
                   স্বাগতম <span className="text-primary">সমাধা</span>য়
                 </h1>
                 <p className="text-base md:text-xl text-gray-600 dark:text-gray-400 mb-6">
-                  আপনার সমস্যা জানান, সমাধান পান।
+                  মাধ্যম নয়, সরাসরি পৌছান
                 </p>
 
                 {/* Show user greeting if logged in */}
@@ -81,7 +81,7 @@ export default function HomePage() {
                     className="mb-6 p-4 bg-primary/10 dark:bg-primary/20 rounded-lg inline-block"
                   >
                     <p className="text-gray-900 dark:text-white font-semibold">
-                      👋 স্বাগতম, {session.user.name}!
+                      স্বাগতম, {session.user.name}!
                     </p>
                   </motion.div>
                 )}
@@ -91,7 +91,7 @@ export default function HomePage() {
                   {!session ? (
                     <>
                       <Button
-                        variant="primary"
+                        variant="outline"
                         size="lg"
                         onClick={() => signIn('google')}
                         className="flex-1 max-w-xs"
