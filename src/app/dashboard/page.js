@@ -1,5 +1,10 @@
 'use client';
 
+
+
+// In your render:
+
+
 import { useState, useEffect } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -15,6 +20,7 @@ import { motion } from 'framer-motion';
 import { FiSearch, FiLogIn, FiAlertCircle } from 'react-icons/fi';
 import { format } from 'date-fns';
 import Image from 'next/image';
+import ComplaintCard from '@/components/dashboard/ComplaintCard';
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -237,10 +243,9 @@ export default function DashboardPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {complaints.map((complaint) => (
-                  <ComplaintCard
-                    key={complaint.id}
+                  <ComplaintCard 
+                    key={complaint.id} 
                     complaint={complaint}
-                    onClick={() => viewComplaintDetails(complaint)}
                   />
                 ))}
               </div>
