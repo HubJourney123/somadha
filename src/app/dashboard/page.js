@@ -20,7 +20,7 @@ import { motion } from 'framer-motion';
 import { FiSearch, FiLogIn, FiAlertCircle } from 'react-icons/fi';
 import { format } from 'date-fns';
 import Image from 'next/image';
-import ComplaintCard from '@/components/complaint/ComplaintCard';
+
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();

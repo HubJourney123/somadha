@@ -15,14 +15,14 @@ export default function BottomNav() {
 
   const navItems = [
     {
-      name: 'সমস্যা পোস্ট করুন',
-      href: '/post-complaint',
-      icon: FiPlusCircle,
-    },
-    {
       name: 'হোম',
       href: '/',
       icon: FiHome,
+    },
+    {
+      name: 'সমস্যা পোস্ট করুন',
+      href: '/post-complaint',
+      icon: FiPlusCircle,
     },
     {
       name: 'ড্যাশবোর্ড',
