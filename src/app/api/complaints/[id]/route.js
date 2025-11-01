@@ -2,18 +2,17 @@ import { sql } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
 // GET - Get complaint by unique ID
-export async function GET(request, { params }) {
+export async function GET(request, context) {
   console.log('========================================');
   console.log('API Route Hit: /api/complaints/[id]');
-  console.log('========================================');
+  console.log('Context:', JSON.stringify(context));
   
   try {
-    // Log the params object
-    console.log('Params object:', JSON.stringify(params));
-    console.log('Params.id type:', typeof params.id);
-    console.log('Params.id value:', params.id);
+    // Next.js 13+ uses context.params which might be a Promise
+    const params = await Promise.resolve(context.params);
+    console.log('Resolved params:', params);
     
-    const { id } = params;
+    const id = params?.id;
     console.log('Extracted ID:', id);
 
     if (!id) {
@@ -41,13 +40,6 @@ export async function GET(request, { params }) {
 
     if (complaintResult.length === 0) {
       console.log('❌ Complaint not found in database');
-      
-      // Double check with a simpler query
-      const exists = await sql`
-        SELECT unique_id FROM complaints WHERE unique_id = ${id}
-      `;
-      console.log('Simple query result:', exists.length);
-      
       return NextResponse.json(
         { success: false, error: 'Complaint not found' },
         { status: 404 }
@@ -56,7 +48,6 @@ export async function GET(request, { params }) {
 
     const complaint = complaintResult[0];
     console.log('✅ Found complaint:', complaint.unique_id);
-    console.log('Complaint ID in DB:', complaint.id);
 
     // Get status history
     console.log('Fetching status history for complaint_id:', complaint.id);
@@ -83,9 +74,7 @@ export async function GET(request, { params }) {
   } catch (error) {
     console.error('========================================');
     console.error('❌ ERROR in GET /api/complaints/[id]');
-    console.error('Error name:', error.name);
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
+    console.error('Error:', error);
     console.error('========================================');
     
     return NextResponse.json(
@@ -100,9 +89,18 @@ export async function GET(request, { params }) {
 }
 
 // PATCH - Update complaint status
-export async function PATCH(request, { params }) {
+export async function PATCH(request, context) {
   try {
-    const { id } = params;
+    const params = await Promise.resolve(context.params);
+    const id = params?.id;
+    
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid complaint ID' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
     const { statusId, statusName, solutionImageUrl, notes } = body;
 

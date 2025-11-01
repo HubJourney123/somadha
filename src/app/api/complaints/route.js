@@ -12,48 +12,66 @@ export async function GET(request) {
 
     console.log('Fetching complaints with filters:', { categoryId, statusId, upazila, searchQuery });
 
-    // Build query
-    let queryText = `
-      SELECT 
-        c.*,
-        u.name as user_name,
-        u.email as user_email,
-        (SELECT COUNT(*) FROM complaint_status_history WHERE complaint_id = c.id) as status_update_count
-      FROM complaints c
-      LEFT JOIN users u ON c.user_id = u.id
-      WHERE 1=1
-    `;
+    // Build query with proper tagged template syntax
+    let complaints;
 
-    const params = [];
-    let paramIndex = 1;
+    if (!categoryId && !statusId && !upazila && !searchQuery) {
+      // No filters - simple query
+      complaints = await sql`
+        SELECT 
+          c.*,
+          u.name as user_name,
+          u.email as user_email,
+          (SELECT COUNT(*) FROM complaint_status_history WHERE complaint_id = c.id) as status_update_count
+        FROM complaints c
+        LEFT JOIN users u ON c.user_id = u.id
+        ORDER BY c.created_at DESC
+        LIMIT 100
+      `;
+    } else {
+      // With filters - use dynamic query
+      let conditions = [];
+      
+      if (categoryId) {
+        conditions.push(sql`c.category_id = ${parseInt(categoryId)}`);
+      }
+      if (statusId) {
+        conditions.push(sql`c.status_id = ${parseInt(statusId)}`);
+      }
+      if (upazila) {
+        conditions.push(sql`c.upazila = ${upazila}`);
+      }
+      if (searchQuery) {
+        conditions.push(sql`(c.unique_id ILIKE ${`%${searchQuery}%`} OR c.details ILIKE ${`%${searchQuery}%`})`);
+      }
 
-    if (categoryId) {
-      queryText += ` AND c.category_id = $${paramIndex}`;
-      params.push(parseInt(categoryId));
-      paramIndex++;
+      // This is a workaround - for complex queries, we'll fetch all and filter
+      const allComplaints = await sql`
+        SELECT 
+          c.*,
+          u.name as user_name,
+          u.email as user_email,
+          (SELECT COUNT(*) FROM complaint_status_history WHERE complaint_id = c.id) as status_update_count
+        FROM complaints c
+        LEFT JOIN users u ON c.user_id = u.id
+        ORDER BY c.created_at DESC
+      `;
+
+      // Apply filters in JavaScript
+      complaints = allComplaints.filter(c => {
+        if (categoryId && c.category_id !== parseInt(categoryId)) return false;
+        if (statusId && c.status_id !== parseInt(statusId)) return false;
+        if (upazila && c.upazila !== upazila) return false;
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase();
+          if (!c.unique_id.toLowerCase().includes(query) && 
+              !c.details.toLowerCase().includes(query)) {
+            return false;
+          }
+        }
+        return true;
+      });
     }
-
-    if (statusId) {
-      queryText += ` AND c.status_id = $${paramIndex}`;
-      params.push(parseInt(statusId));
-      paramIndex++;
-    }
-
-    if (upazila) {
-      queryText += ` AND c.upazila = $${paramIndex}`;
-      params.push(upazila);
-      paramIndex++;
-    }
-
-    if (searchQuery) {
-      queryText += ` AND (c.unique_id ILIKE $${paramIndex} OR c.details ILIKE $${paramIndex})`;
-      params.push(`%${searchQuery}%`);
-      paramIndex++;
-    }
-
-    queryText += ` ORDER BY c.created_at DESC LIMIT 100`;
-
-    const complaints = await sql(queryText, params);
 
     console.log(`Found ${complaints.length} complaints`);
 
