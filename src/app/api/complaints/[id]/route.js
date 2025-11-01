@@ -1,69 +1,62 @@
-import { NextResponse } from 'next/server';
-import { 
-  getComplaintByUniqueId, 
-  getComplaintStatusHistory,
-  updateComplaintStatus 
-} from '@/lib/db';
+import { getComplaintByUniqueId, getComplaintStatusHistory } from '@/lib/db';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
-
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 
-
+// GET - Get complaint by unique ID
 export async function GET(request, { params }) {
   try {
-    const { id } = params;
+    console.log('GET /api/complaints/[id] - ID:', params.id);
 
-    const complaint = await getComplaintByUniqueId(id);
+    const complaint = await getComplaintByUniqueId(params.id);
 
     if (!complaint) {
+      console.log('Complaint not found:', params.id);
       return NextResponse.json(
         { success: false, error: 'Complaint not found' },
         { status: 404 }
       );
     }
 
+    console.log('Complaint found:', complaint.unique_id);
+    console.log('Status history count:', complaint.status_history?.length || 0);
+
     return NextResponse.json({
       success: true,
       data: complaint
     });
+
   } catch (error) {
     console.error('Error fetching complaint:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch complaint' },
+      { 
+        success: false, 
+        error: 'Failed to fetch complaint',
+        details: error.message
+      },
       { status: 500 }
     );
   }
 }
 
-// ... rest of the file
-
-// PATCH - Update complaint status (Admin/Agent only)
+// PATCH - Update complaint status
 export async function PATCH(request, { params }) {
   try {
     const session = await getServerSession(authOptions);
 
-    // Check if user is admin or agent
-    if (!session || !['agent', 'developer', 'politician'].includes(session.user.role)) {
+    if (!session) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    const uniqueId = params.id;
     const body = await request.json();
     const { statusId, statusName, solutionImageUrl, notes } = body;
 
-    if (!statusId || !statusName) {
-      return NextResponse.json(
-        { success: false, error: 'Status ID and name are required' },
-        { status: 400 }
-      );
-    }
-
     // Get complaint
-    const complaint = await getComplaintByUniqueId(uniqueId);
+    const complaint = await getComplaintByUniqueId(params.id);
     if (!complaint) {
       return NextResponse.json(
         { success: false, error: 'Complaint not found' },
@@ -71,21 +64,45 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    // Update status
-    await updateComplaintStatus(complaint.id, {
-      statusId,
-      statusName,
-      updatedByType: session.user.role,
-      updatedById: parseInt(session.user.id),
-      updatedByName: session.user.name,
-      solutionImageUrl: solutionImageUrl || null,
-      notes: notes || null
-    });
+    // Update complaint status
+    await sql`
+      UPDATE complaints 
+      SET 
+        status_id = ${statusId},
+        status_name = ${statusName},
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${complaint.id}
+    `;
+
+    // Add to status history
+    await sql`
+      INSERT INTO complaint_status_history (
+        complaint_id, 
+        status_id, 
+        status_name, 
+        updated_by_type,
+        updated_by_id,
+        updated_by_name,
+        solution_image_url,
+        notes
+      )
+      VALUES (
+        ${complaint.id},
+        ${statusId},
+        ${statusName},
+        ${session.user.role},
+        ${session.user.id || null},
+        ${session.user.name},
+        ${solutionImageUrl || null},
+        ${notes || null}
+      )
+    `;
 
     return NextResponse.json({
       success: true,
-      message: 'Complaint status updated successfully'
+      message: 'Status updated successfully'
     });
+
   } catch (error) {
     console.error('Error updating complaint:', error);
     return NextResponse.json(

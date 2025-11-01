@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import StatusBadge from '@/components/complaint/StatusBadge';
 import ComplaintTracking from '@/components/complaint/ComplaintTracking';
 import Modal from '@/components/ui/Modal';
@@ -37,13 +37,22 @@ export default function ComplaintCard({ complaint }) {
 
     setLoading(true);
     try {
+      console.log('Fetching complaint details for:', complaint.unique_id);
       const response = await fetch(`/api/complaints/${complaint.unique_id}`);
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('Complaint data:', data);
         setComplaintData(data.data);
+      } else {
+        const errorData = await response.json();
+        console.error('Error fetching complaint:', errorData);
+        alert('অভিযোগ লোড করতে সমস্যা হয়েছে');
       }
     } catch (error) {
       console.error('Error fetching complaint details:', error);
+      alert('অভিযোগ লোড করতে সমস্যা হয়েছে');
     } finally {
       setLoading(false);
     }
@@ -53,15 +62,16 @@ export default function ComplaintCard({ complaint }) {
   const getStatusProgress = (statusId) => {
     const progress = {
       1: 20,  // জমা দেওয়া হয়েছে
-      2: 40,  // পর্যালোচনা করা হচ্ছে
-      3: 60,  // কাজ চলছে
-      4: 80,  // প্রায় সম্পন্ন
+      2: 40,  // গ্রহণ করা হয়েছে
+      3: 60,  // সমাধানের জন্য দেয়া হয়েছে
+      4: 80,  // প্রক্রিয়াধীন
       5: 100  // সমাধান হয়েছে
     };
     return progress[statusId] || 0;
   };
 
   const progress = getStatusProgress(complaint.status_id);
+  const updateCount = complaint.status_update_count || complaint.status_history?.length || 1;
 
   return (
     <>
@@ -147,22 +157,21 @@ export default function ComplaintCard({ complaint }) {
           </div>
 
           {/* Status Stats */}
-// In ComplaintCard.js, replace the status stats section:
           <div className="flex items-center gap-4 mb-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
             <div className="flex items-center gap-2">
-                <FiClock className="w-4 h-4 text-gray-500" />
-                <span className="text-xs text-gray-600 dark:text-gray-400">
-                 {complaint.status_history?.length || complaint.status_update_count || 0} আপডেট
-                </span>
-             </div>
-             {complaint.status_id !== 1 && (
+              <FiClock className="w-4 h-4 text-gray-500" />
+              <span className="text-xs text-gray-600 dark:text-gray-400">
+                {updateCount} আপডেট
+              </span>
+            </div>
+            {complaint.status_id !== 1 && (
               <div className="flex items-center gap-2">
-                  <FiTrendingUp className="w-4 h-4 text-primary" />
-                  <span className="text-xs text-primary font-semibold">
+                <FiTrendingUp className="w-4 h-4 text-primary" />
+                <span className="text-xs text-primary font-semibold">
                   {progress}% সম্পন্ন
-                  </span>
+                </span>
               </div>
-             )}
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -210,9 +219,15 @@ export default function ComplaintCard({ complaint }) {
           <ComplaintTracking complaint={complaintData} />
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-red-600 dark:text-red-400 mb-4">
               ডেটা লোড করতে সমস্যা হয়েছে
             </p>
+            <button
+              onClick={() => setShowTracking(false)}
+              className="text-primary hover:underline"
+            >
+              বন্ধ করুন
+            </button>
           </div>
         )}
       </Modal>
@@ -230,17 +245,24 @@ export default function ComplaintCard({ complaint }) {
             <p className="text-gray-600 dark:text-gray-400">লোড হচ্ছে...</p>
           </div>
         ) : complaintData ? (
-          <div className="space-y-4">
-            {/* Show full complaint details */}
-            <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                বর্ণনা
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                {complaintData.details}
-              </p>
+          <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                  {complaintData.category_name}
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                  {complaintData.unique_id}
+                </p>
+              </div>
+              <StatusBadge 
+                statusId={complaintData.status_id} 
+                statusName={complaintData.status_name} 
+              />
             </div>
 
+            {/* Image */}
             {complaintData.image_url && (
               <div className="relative w-full h-64 rounded-lg overflow-hidden">
                 <Image
@@ -252,26 +274,70 @@ export default function ComplaintCard({ complaint }) {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            {/* Description */}
+            <div>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                বর্ণনা
+              </h4>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                {complaintData.details}
+              </p>
+            </div>
+
+            {/* Location Info */}
+            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div>
-                <span className="text-gray-500 dark:text-gray-400">উপজেলা:</span>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">উপজেলা</p>
                 <p className="font-semibold text-gray-900 dark:text-white">
                   {complaintData.upazila}
                 </p>
               </div>
               <div>
-                <span className="text-gray-500 dark:text-gray-400">ইউনিয়ন:</span>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">ইউনিয়ন</p>
                 <p className="font-semibold text-gray-900 dark:text-white">
                   {complaintData.union_name}
                 </p>
               </div>
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">তারিখ</p>
+                <p className="font-semibold text-gray-900 dark:text-white">
+                  {format(new Date(complaintData.created_at), 'dd MMMM yyyy, hh:mm a')}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">স্ট্যাটাস</p>
+                <p className="font-semibold text-gray-900 dark:text-white">
+                  {complaintData.status_name}
+                </p>
+              </div>
             </div>
+
+            {/* User Info (if not anonymous) */}
+            {!complaintData.is_anonymous && complaintData.user_name && (
+              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">অভিযোগকারী</p>
+                <p className="font-semibold text-gray-900 dark:text-white">
+                  {complaintData.user_name}
+                </p>
+                {complaintData.user_email && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    {complaintData.user_email}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-red-600 dark:text-red-400 mb-4">
               ডেটা লোড করতে সমস্যা হয়েছে
             </p>
+            <button
+              onClick={() => setShowDetails(false)}
+              className="text-primary hover:underline"
+            >
+              বন্ধ করুন
+            </button>
           </div>
         )}
       </Modal>
