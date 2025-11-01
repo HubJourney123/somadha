@@ -8,7 +8,7 @@ import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
 import { CATEGORIES } from '@/constants/categories';
 import { LOCATIONS } from '@/constants/locations';
-import { FiUpload, FiX, FiCheckCircle } from 'react-icons/fi';
+import { FiUpload, FiX, FiCheckCircle, FiCopy } from 'react-icons/fi';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
@@ -18,6 +18,7 @@ export default function ComplaintForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [complaintId, setComplaintId] = useState('');
+  const [copied, setCopied] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -37,12 +38,9 @@ export default function ComplaintForm() {
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
-
-    // Reset union when upazila changes
     if (field === 'upazila') {
       setFormData(prev => ({ ...prev, unionName: '' }));
     }
@@ -117,6 +115,17 @@ export default function ComplaintForm() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(complaintId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      alert('কপি করতে সমস্যা হয়েছে');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -132,7 +141,6 @@ export default function ComplaintForm() {
       if (imageFile) {
         imageUrl = await uploadImage();
         if (!imageUrl && imageFile) {
-          // Image upload failed
           setLoading(false);
           return;
         }
@@ -141,6 +149,21 @@ export default function ComplaintForm() {
       // Get category name
       const category = CATEGORIES.find(c => c.id === parseInt(formData.categoryId));
 
+      // Get or create user ID
+      let userId = null;
+      if (session?.user?.email) {
+        // Get user from database
+        const userResponse = await fetch(`/api/users/by-email?email=${encodeURIComponent(session.user.email)}`);
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          userId = userData.data.id;
+        } else {
+          console.error('Failed to get user ID');
+        }
+      }
+
+      console.log('Submitting complaint with user ID:', userId);
+
       // Submit complaint
       const response = await fetch('/api/complaints', {
         method: 'POST',
@@ -148,6 +171,7 @@ export default function ComplaintForm() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          userId: userId,
           categoryId: parseInt(formData.categoryId),
           categoryName: category.name,
           upazila: formData.upazila,
@@ -159,10 +183,14 @@ export default function ComplaintForm() {
       });
 
       if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
         throw new Error('Failed to submit complaint');
       }
 
       const data = await response.json();
+      console.log('Complaint created:', data);
+      
       setComplaintId(data.data.unique_id);
       setSuccess(true);
 
@@ -202,11 +230,31 @@ export default function ComplaintForm() {
         <p className="text-gray-600 dark:text-gray-400 mb-4">
           আপনার অভিযোগ সফলভাবে জমা হয়েছে।
         </p>
-        <div className="bg-primary-light dark:bg-primary/20 rounded-lg p-4 mb-6">
+        <div className="bg-primary/10 dark:bg-primary/20 rounded-lg p-4 mb-4">
           <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
             আপনার অভিযোগ নম্বর:
           </p>
-          <p className="text-2xl font-bold text-primary">{complaintId}</p>
+          <div className="flex items-center justify-center gap-2">
+            <p className="text-xl md:text-2xl font-bold text-primary font-mono">
+              {complaintId}
+            </p>
+            <button
+              onClick={copyToClipboard}
+              className="p-2 hover:bg-primary/20 rounded-lg transition-colors"
+              title="কপি করুন"
+            >
+              <FiCopy className={`w-5 h-5 ${copied ? 'text-green-500' : 'text-primary'}`} />
+            </button>
+          </div>
+          {copied && (
+            <motion.p
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-sm text-green-600 dark:text-green-400 mt-2"
+            >
+              ✓ কপি হয়েছে!
+            </motion.p>
+          )}
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
           এই নম্বর দিয়ে আপনি আপনার অভিযোগের অবস্থা ট্র্যাক করতে পারবেন।
@@ -215,14 +263,17 @@ export default function ComplaintForm() {
           <Button
             variant="primary"
             fullWidth
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push('/dashboard?refresh=true')}
           >
             ড্যাশবোর্ডে যান
           </Button>
           <Button
             variant="secondary"
             fullWidth
-            onClick={() => setSuccess(false)}
+            onClick={() => {
+              setSuccess(false);
+              setCopied(false);
+            }}
           >
             নতুন অভিযোগ
           </Button>
@@ -238,10 +289,6 @@ export default function ComplaintForm() {
       onSubmit={handleSubmit}
       className="card p-6 max-w-2xl mx-auto space-y-6"
     >
-      <div>
-        
-      </div>
-
       {/* Category */}
       <Select
         label="সমস্যার ধরন"
