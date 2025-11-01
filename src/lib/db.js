@@ -235,7 +235,8 @@ export async function createComplaint(complaintData) {
 
 export async function getComplaintByUniqueId(uniqueId) {
   try {
-    const result = await sql`
+    // Get complaint details
+    const complaintResult = await sql`
       SELECT 
         c.*,
         u.name as user_name,
@@ -244,7 +245,24 @@ export async function getComplaintByUniqueId(uniqueId) {
       LEFT JOIN users u ON c.user_id = u.id
       WHERE c.unique_id = ${uniqueId}
     `;
-    return result[0];
+
+    if (complaintResult.length === 0) {
+      return null;
+    }
+
+    const complaint = complaintResult[0];
+
+    // Get status history
+    const statusHistory = await sql`
+      SELECT * FROM complaint_status_history
+      WHERE complaint_id = ${complaint.id}
+      ORDER BY created_at ASC
+    `;
+
+    // Attach status history to complaint
+    complaint.status_history = statusHistory;
+
+    return complaint;
   } catch (error) {
     console.error('Error getting complaint:', error);
     throw error;
@@ -270,11 +288,42 @@ export async function getAllComplaints(filters = {}, limit = 100, offset = 0) {
   const { categoryId, statusId, upazila, searchQuery } = filters;
 
   try {
-    let query = `
+    let baseQuery = sql`
       SELECT 
         c.*,
         u.name as user_name,
-        u.email as user_email
+        u.email as user_email,
+        (SELECT COUNT(*) FROM complaint_status_history WHERE complaint_id = c.id) as status_update_count
+      FROM complaints c
+      LEFT JOIN users u ON c.user_id = u.id
+      WHERE 1=1
+    `;
+
+    const conditions = [];
+    
+    if (categoryId) {
+      conditions.push(sql`c.category_id = ${categoryId}`);
+    }
+
+    if (statusId) {
+      conditions.push(sql`c.status_id = ${statusId}`);
+    }
+
+    if (upazila) {
+      conditions.push(sql`c.upazila = ${upazila}`);
+    }
+
+    if (searchQuery) {
+      conditions.push(sql`(c.unique_id ILIKE ${`%${searchQuery}%`} OR c.details ILIKE ${`%${searchQuery}%`})`);
+    }
+
+    // This is a workaround - build the query string
+    let queryText = `
+      SELECT 
+        c.*,
+        u.name as user_name,
+        u.email as user_email,
+        (SELECT COUNT(*) FROM complaint_status_history WHERE complaint_id = c.id) as status_update_count
       FROM complaints c
       LEFT JOIN users u ON c.user_id = u.id
       WHERE 1=1
@@ -284,33 +333,33 @@ export async function getAllComplaints(filters = {}, limit = 100, offset = 0) {
     let paramIndex = 1;
 
     if (categoryId) {
-      query += ` AND c.category_id = $${paramIndex}`;
+      queryText += ` AND c.category_id = $${paramIndex}`;
       params.push(categoryId);
       paramIndex++;
     }
 
     if (statusId) {
-      query += ` AND c.status_id = $${paramIndex}`;
+      queryText += ` AND c.status_id = $${paramIndex}`;
       params.push(statusId);
       paramIndex++;
     }
 
     if (upazila) {
-      query += ` AND c.upazila = $${paramIndex}`;
+      queryText += ` AND c.upazila = $${paramIndex}`;
       params.push(upazila);
       paramIndex++;
     }
 
     if (searchQuery) {
-      query += ` AND (c.unique_id ILIKE $${paramIndex} OR c.details ILIKE $${paramIndex})`;
+      queryText += ` AND (c.unique_id ILIKE $${paramIndex} OR c.details ILIKE $${paramIndex})`;
       params.push(`%${searchQuery}%`);
       paramIndex++;
     }
 
-    query += ` ORDER BY c.created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+    queryText += ` ORDER BY c.created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
     params.push(limit, offset);
 
-    const result = await sql(query, params);
+    const result = await sql(queryText, params);
     return result;
   } catch (error) {
     console.error('Error getting all complaints:', error);

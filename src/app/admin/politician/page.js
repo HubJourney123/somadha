@@ -47,10 +47,16 @@ export default function PoliticianDashboardPage() {
 
   const fetchComplaints = async () => {
     try {
+      console.log('Fetching complaints...');
       const response = await fetch('/api/complaints');
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
-        setComplaints(data.data);
+        console.log('Complaints data:', data);
+        setComplaints(data.data || []);
+      } else {
+        console.error('Failed to fetch complaints:', response.status);
       }
     } catch (error) {
       console.error('Error fetching complaints:', error);
@@ -59,10 +65,16 @@ export default function PoliticianDashboardPage() {
 
   const fetchAgents = async () => {
     try {
+      console.log('Fetching agents...');
       const response = await fetch('/api/admin/agents');
+      console.log('Agents response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
-        setAgents(data.data);
+        console.log('Agents data:', data);
+        setAgents(data.data || []);
+      } else {
+        console.error('Failed to fetch agents:', response.status);
       }
     } catch (error) {
       console.error('Error fetching agents:', error);
@@ -102,6 +114,45 @@ export default function PoliticianDashboardPage() {
         </p>
       </div>
 
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="card p-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+              মোট অভিযোগ
+            </h3>
+            <FiFileText className="w-5 h-5 text-blue-500" />
+          </div>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+            {complaints.length}
+          </p>
+        </div>
+
+        <div className="card p-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+              সমাধান হয়েছে
+            </h3>
+            <FiBarChart2 className="w-5 h-5 text-green-500" />
+          </div>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+            {complaints.filter(c => c.status_id === 5).length}
+          </p>
+        </div>
+
+        <div className="card p-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+              মোট এজেন্ট
+            </h3>
+            <FiUsers className="w-5 h-5 text-purple-500" />
+          </div>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+            {agents.length}
+          </p>
+        </div>
+      </div>
+
       {/* Tabs */}
       <div className="card mb-6">
         <div className="border-b border-gray-200 dark:border-dark-border">
@@ -126,7 +177,7 @@ export default function PoliticianDashboardPage() {
               }`}
             >
               <FiFileText className="w-5 h-5" />
-              অভিযোগসমূহ
+              অভিযোগসমূহ ({complaints.length})
             </button>
             <button
               onClick={() => setActiveTab('agents')}
@@ -137,7 +188,7 @@ export default function PoliticianDashboardPage() {
               }`}
             >
               <FiUsers className="w-5 h-5" />
-              এজেন্ট ব্যবস্থাপনা
+              এজেন্ট ব্যবস্থাপনা ({agents.length})
             </button>
           </div>
         </div>

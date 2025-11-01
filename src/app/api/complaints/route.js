@@ -1,15 +1,21 @@
-import { NextResponse } from 'next/server';
+import { sql } from '@/lib/db';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
-import { 
-  createComplaint, 
-  getAllComplaints, 
-  getUserByEmail 
-} from '@/lib/db';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { NextResponse } from 'next/server';
 
-// GET - Fetch complaints
+// GET - Fetch all complaints
 export async function GET(request) {
   try {
+    const session = await getServerSession(authOptions);
+
+    // Check authentication
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const categoryId = searchParams.get('categoryId');
     const statusId = searchParams.get('statusId');
@@ -18,80 +24,69 @@ export async function GET(request) {
     const limit = parseInt(searchParams.get('limit') || '100');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    const filters = {};
-    if (categoryId) filters.categoryId = parseInt(categoryId);
-    if (statusId) filters.statusId = parseInt(statusId);
-    if (upazila) filters.upazila = upazila;
-    if (searchQuery) filters.searchQuery = searchQuery;
+    // Build query
+    let queryText = `
+      SELECT 
+        c.*,
+        u.name as user_name,
+        u.email as user_email,
+        (SELECT COUNT(*) FROM complaint_status_history WHERE complaint_id = c.id) as status_update_count
+      FROM complaints c
+      LEFT JOIN users u ON c.user_id = u.id
+      WHERE 1=1
+    `;
 
-    const complaints = await getAllComplaints(filters, limit, offset);
+    const params = [];
+    let paramIndex = 1;
+
+    if (categoryId) {
+      queryText += ` AND c.category_id = $${paramIndex}`;
+      params.push(parseInt(categoryId));
+      paramIndex++;
+    }
+
+    if (statusId) {
+      queryText += ` AND c.status_id = $${paramIndex}`;
+      params.push(parseInt(statusId));
+      paramIndex++;
+    }
+
+    if (upazila) {
+      queryText += ` AND c.upazila = $${paramIndex}`;
+      params.push(upazila);
+      paramIndex++;
+    }
+
+    if (searchQuery) {
+      queryText += ` AND (c.unique_id ILIKE $${paramIndex} OR c.details ILIKE $${paramIndex})`;
+      params.push(`%${searchQuery}%`);
+      paramIndex++;
+    }
+
+    queryText += ` ORDER BY c.created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+    params.push(limit, offset);
+
+    console.log('Executing query:', queryText);
+    console.log('With params:', params);
+
+    const complaints = await sql(queryText, params);
+
+    console.log(`Found ${complaints.length} complaints`);
 
     return NextResponse.json({
       success: true,
       data: complaints,
-      count: complaints.length
+      total: complaints.length
     });
+
   } catch (error) {
     console.error('Error fetching complaints:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch complaints' },
-      { status: 500 }
-    );
-  }
-}
-
-// POST - Create new complaint
-export async function POST(request) {
-  try {
-    const session = await getServerSession(authOptions);
-    const body = await request.json();
-
-    const {
-      categoryId,
-      categoryName,
-      upazila,
-      unionName,
-      details,
-      imageUrl,
-      isAnonymous
-    } = body;
-
-    // Validation
-    if (!categoryId || !categoryName || !upazila || !unionName || !details) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
-
-    let userId = null;
-
-    // Get user ID if not anonymous and user is logged in
-    if (!isAnonymous && session?.user?.email) {
-      const user = await getUserByEmail(session.user.email);
-      userId = user?.id || null;
-    }
-
-    const complaint = await createComplaint({
-      userId,
-      categoryId,
-      categoryName,
-      upazila,
-      unionName,
-      details,
-      imageUrl: imageUrl || null,
-      isAnonymous: isAnonymous || false
-    });
-
-    return NextResponse.json({
-      success: true,
-      data: complaint,
-      message: 'Complaint submitted successfully'
-    }, { status: 201 });
-  } catch (error) {
-    console.error('Error creating complaint:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to create complaint' },
+      { 
+        success: false, 
+        error: 'Failed to fetch complaints',
+        details: error.message
+      },
       { status: 500 }
     );
   }

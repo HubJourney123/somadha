@@ -18,13 +18,24 @@ import Image from 'next/image';
 
 export default function ComplaintCard({ complaint }) {
   const [showTracking, setShowTracking] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const [complaintData, setComplaintData] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleShowTracking = async () => {
     setShowTracking(true);
-    setLoading(true);
+    await fetchComplaintDetails();
+  };
 
+  const handleShowDetails = async () => {
+    setShowDetails(true);
+    await fetchComplaintDetails();
+  };
+
+  const fetchComplaintDetails = async () => {
+    if (complaintData) return; // Already loaded
+
+    setLoading(true);
     try {
       const response = await fetch(`/api/complaints/${complaint.unique_id}`);
       if (response.ok) {
@@ -58,7 +69,7 @@ export default function ComplaintCard({ complaint }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         whileHover={{ y: -4, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
-        className="card overflow-hidden group cursor-pointer relative"
+        className="card overflow-hidden group relative"
       >
         {/* Progress Bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200 dark:bg-gray-700">
@@ -136,21 +147,22 @@ export default function ComplaintCard({ complaint }) {
           </div>
 
           {/* Status Stats */}
+// In ComplaintCard.js, replace the status stats section:
           <div className="flex items-center gap-4 mb-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
             <div className="flex items-center gap-2">
-              <FiClock className="w-4 h-4 text-gray-500" />
-              <span className="text-xs text-gray-600 dark:text-gray-400">
-                {complaint.status_history?.length || 0} আপডেট
-              </span>
-            </div>
-            {complaint.status_id !== 1 && (
-              <div className="flex items-center gap-2">
-                <FiTrendingUp className="w-4 h-4 text-primary" />
-                <span className="text-xs text-primary font-semibold">
-                  {progress}% সম্পন্ন
+                <FiClock className="w-4 h-4 text-gray-500" />
+                <span className="text-xs text-gray-600 dark:text-gray-400">
+                 {complaint.status_history?.length || complaint.status_update_count || 0} আপডেট
                 </span>
+             </div>
+             {complaint.status_id !== 1 && (
+              <div className="flex items-center gap-2">
+                  <FiTrendingUp className="w-4 h-4 text-primary" />
+                  <span className="text-xs text-primary font-semibold">
+                  {progress}% সম্পন্ন
+                  </span>
               </div>
-            )}
+             )}
           </div>
 
           {/* Action Buttons */}
@@ -168,6 +180,7 @@ export default function ComplaintCard({ complaint }) {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              onClick={handleShowDetails}
               className="px-4 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-lg transition-colors"
             >
               <FiEye className="w-5 h-5" />
@@ -195,6 +208,65 @@ export default function ComplaintCard({ complaint }) {
           </div>
         ) : complaintData ? (
           <ComplaintTracking complaint={complaintData} />
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-600 dark:text-gray-400">
+              ডেটা লোড করতে সমস্যা হয়েছে
+            </p>
+          </div>
+        )}
+      </Modal>
+
+      {/* Details Modal */}
+      <Modal
+        isOpen={showDetails}
+        onClose={() => setShowDetails(false)}
+        title="অভিযোগের বিস্তারিত"
+        size="lg"
+      >
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="spinner mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-gray-400">লোড হচ্ছে...</p>
+          </div>
+        ) : complaintData ? (
+          <div className="space-y-4">
+            {/* Show full complaint details */}
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                বর্ণনা
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                {complaintData.details}
+              </p>
+            </div>
+
+            {complaintData.image_url && (
+              <div className="relative w-full h-64 rounded-lg overflow-hidden">
+                <Image
+                  src={complaintData.image_url}
+                  alt="Complaint"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-gray-500 dark:text-gray-400">উপজেলা:</span>
+                <p className="font-semibold text-gray-900 dark:text-white">
+                  {complaintData.upazila}
+                </p>
+              </div>
+              <div>
+                <span className="text-gray-500 dark:text-gray-400">ইউনিয়ন:</span>
+                <p className="font-semibold text-gray-900 dark:text-white">
+                  {complaintData.union_name}
+                </p>
+              </div>
+            </div>
+          </div>
         ) : (
           <div className="text-center py-12">
             <p className="text-gray-600 dark:text-gray-400">

@@ -7,11 +7,14 @@ import {
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
-// GET - Fetch single complaint by unique ID
+import { sql } from '@/lib/db';
+
+
 export async function GET(request, { params }) {
   try {
-    const uniqueId = params.id;
-    const complaint = await getComplaintByUniqueId(uniqueId);
+    const { id } = params;
+
+    const complaint = await getComplaintByUniqueId(id);
 
     if (!complaint) {
       return NextResponse.json(
@@ -20,15 +23,9 @@ export async function GET(request, { params }) {
       );
     }
 
-    // Get status history
-    const statusHistory = await getComplaintStatusHistory(complaint.id);
-
     return NextResponse.json({
       success: true,
-      data: {
-        ...complaint,
-        statusHistory
-      }
+      data: complaint
     });
   } catch (error) {
     console.error('Error fetching complaint:', error);
@@ -38,6 +35,8 @@ export async function GET(request, { params }) {
     );
   }
 }
+
+// ... rest of the file
 
 // PATCH - Update complaint status (Admin/Agent only)
 export async function PATCH(request, { params }) {

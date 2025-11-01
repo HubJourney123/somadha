@@ -1,3 +1,4 @@
+//src/app/admin/developer/page.js
 'use client';
 
 import { useState, useEffect } from 'react';
