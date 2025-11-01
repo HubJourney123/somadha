@@ -1,17 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
-import ComplaintCard from '@/components/complaint/ComplaintCard';
+import ComplaintCard from '@/components/dashboard/ComplaintCard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Button from '@/components/ui/Button';
 import { FiPlus, FiRefreshCw, FiSearch, FiFilter } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
-export default function DashboardPage() {
+// Separate component that uses useSearchParams
+function DashboardContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -254,5 +255,18 @@ export default function DashboardPage() {
 
       <BottomNav />
     </div>
+  );
+}
+
+// Main component with Suspense wrapper
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 dark:bg-dark-bg flex items-center justify-center">
+        <LoadingSpinner text="লোড হচ্ছে..." />
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
   );
 }
