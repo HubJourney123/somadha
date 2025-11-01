@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
-import ComplaintCard from '@/components/dashboard/ComplaintCard';
+import ComplaintCard from '@/components/complaint/ComplaintCard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Button from '@/components/ui/Button';
 import { FiPlus, FiRefreshCw, FiSearch, FiFilter } from 'react-icons/fi';
