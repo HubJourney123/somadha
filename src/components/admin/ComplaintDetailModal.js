@@ -120,7 +120,7 @@ export default function ComplaintDetailModal({ complaint, isOpen, onClose, onUpd
         throw new Error('Failed to update status');
       }
 
-      alert('স্ট্যাটাস সফলভাবে আপডেট হয়েছে!');
+      toast.success('স্ট্যাটাস সফলভাবে আপডেট হয়েছে!');
       
       // Reset form
       setNotes('');
@@ -247,7 +247,8 @@ export default function ComplaintDetailModal({ complaint, isOpen, onClose, onUpd
                   onChange={(e) => setNewStatus(e.target.value)}
                   options={STATUSES.map(status => ({
                     value: status.id,
-                    label: status.name
+                    label: status.name,
+                    color: status.color
                   }))}
                 />
 
