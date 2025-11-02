@@ -16,7 +16,7 @@ export const STATUSES = [
     id: 3, 
     name: 'সমস্যাটি সমাধানের জন্য দেয়া হয়েছে', 
     nameEn: 'Assigned',
-    color: 'bg-yellow-500'
+    color: 'bg-amber-200'
   },
   { 
     id: 4, 
