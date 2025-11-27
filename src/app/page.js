@@ -112,7 +112,7 @@ export default function HomePage() {
                   ) : (
                     <>
                       <Button
-                        variant="primary"
+                        variant="outline"
                         size="lg"
                         onClick={() => router.push('/post-complaint')}
                         className="flex-1 max-w-xs"
@@ -126,7 +126,7 @@ export default function HomePage() {
                         onClick={() => router.push('/dashboard')}
                         className="flex-1 max-w-xs"
                       >
-                        <span className="text-sm md:text-base">ড্যাশবোর্ড</span>
+                        <span className="text-sm md:text-base">ড্যাশবোর্ডে যান</span>
                         <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
                       </Button>
                     </>
