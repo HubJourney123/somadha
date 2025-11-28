@@ -7,12 +7,12 @@ import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import Button from '@/components/ui/Button';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import { FiHome, FiPlus, FiBarChart2, FiTrendingUp } from 'react-icons/fi';
-import { CATEGORIES } from '@/constants/categories';
+import { FiHome, FiPlus, FiBarChart2, FiTrendingUp, FiRefreshCw } from 'react-icons/fi';
 
 export default function StatsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [stats, setStats] = useState([]);
   const [totalComplaints, setTotalComplaints] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -23,15 +23,31 @@ export default function StatsPage() {
 
   const fetchStats = async () => {
     setLoading(true);
+    setError(null);
+    
     try {
+      console.log('Fetching stats from /api/stats/categories...');
+      
       const response = await fetch('/api/stats/categories');
-      if (response.ok) {
-        const data = await response.json();
-        setStats(data.data);
+      console.log('Response status:', response.status);
+      
+      const data = await response.json();
+      console.log('Response data:', data);
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch stats');
+      }
+
+      if (data.success) {
+        console.log('Setting stats:', data.data);
+        setStats(data.data || []);
         setTotalComplaints(data.total || 0);
+      } else {
+        throw new Error('Invalid response format');
       }
     } catch (error) {
       console.error('Error fetching stats:', error);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -74,6 +90,14 @@ export default function StatsPage() {
           <div className="flex gap-2">
             <Button
               variant="secondary"
+              onClick={fetchStats}
+              disabled={loading}
+            >
+              <FiRefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+              <span className="hidden md:inline">রিফ্রেশ</span>
+            </Button>
+            <Button
+              variant="secondary"
               onClick={() => router.push('/')}
             >
               <FiHome className="w-5 h-5" />
@@ -84,7 +108,7 @@ export default function StatsPage() {
               onClick={() => router.push('/post-complaint')}
             >
               <FiPlus className="w-5 h-5" />
-              <span className="hidden md:inline">অভিযোগ পোস্ট করুন</span>
+              <span className="hidden md:inline">অভিযোগ</span>
             </Button>
           </div>
         </div>
@@ -110,6 +134,18 @@ export default function StatsPage() {
           </div>
         </motion.div>
 
+        {/* Error State */}
+        {error && (
+          <div className="card p-6 mb-6 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+            <p className="text-red-600 dark:text-red-400 mb-2">
+              ❌ ত্রুটি: {error}
+            </p>
+            <Button variant="secondary" onClick={fetchStats}>
+              আবার চেষ্টা করুন
+            </Button>
+          </div>
+        )}
+
         {/* Loading State */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
@@ -121,9 +157,16 @@ export default function StatsPage() {
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               কোনো ডেটা নেই
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               এখনো কোনো অভিযোগ পোস্ট করা হয়নি
             </p>
+            <Button
+              variant="primary"
+              onClick={() => router.push('/post-complaint')}
+            >
+              <FiPlus className="w-5 h-5" />
+              প্রথম অভিযোগ পোস্ট করুন
+            </Button>
           </div>
         ) : (
           <>
@@ -237,7 +280,7 @@ export default function StatsPage() {
             {/* Legend */}
             <div className="card p-4">
               <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-                💡 যেকোনো ক্যাটাগরিতে ক্লিক করে বিস্তারিত দেখুন
+                যেকোনো ক্যাটাগরিতে ক্লিক করে বিস্তারিত দেখুন
               </p>
             </div>
           </>
