@@ -24,7 +24,7 @@ export default function Carousel() {
     {
       id: 3,
       image_url: '/carousel/C3.svg',
-      title: 'একসাথে গড়ি উন্নত ব্রাহ্মণবাড়িয়া'
+      title: 'একসাথে গড়ি উন্নত খুলনা–৫'
     },
     {
       id: 4,

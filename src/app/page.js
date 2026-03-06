@@ -162,7 +162,7 @@ export default function HomePage() {
                   </span>
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 mb-2">
-                  ব্রাহ্মণবাড়িয়ার জনগণের জন্য ডিজিটাল অভিযোগ ব্যবস্থাপনা প্ল্যাটফর্ম
+                  খুলনা–৫ এর জনগণের জন্য ডিজিটাল অভিযোগ ব্যবস্থাপনা প্ল্যাটফর্ম
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-500">
                   © {new Date().getFullYear()} সমাধা। সর্বস্বত্ব সংরক্ষিত।
