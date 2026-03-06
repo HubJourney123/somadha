@@ -5,8 +5,8 @@ import Providers from './providers';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'সমাধা - ব্রাহ্মণবাড়িয়া অভিযোগ ব্যবস্থাপনা',
-  description: 'ব্রাহ্মণবাড়িয়ার জনগণের জন্য ডিজিটাল অভিযোগ ব্যবস্থাপনা প্ল্যাটফর্ম',
+  title: 'সমাধা - খুলনা–৫ অভিযোগ ব্যবস্থাপনা',
+  description: 'খুলনা–৫ এর জনগণের জন্য ডিজিটাল অভিযোগ ব্যবস্থাপনা প্ল্যাটফর্ম',
   themeColor: '#ff9248',
   manifest: '/manifest.json',
   appleWebApp: {

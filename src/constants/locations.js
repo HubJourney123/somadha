@@ -1,5 +1,42 @@
 // Location constants
+
 export const LOCATIONS = {
+  district: 'খুলনা (খুলনা-৫)',
+  upazilas: [
+    {
+      id: 1,
+      name: 'ফুলতলা',
+      unions: [
+        'ফুলতলা',
+        'দামোদর',
+        'জামিরা',
+        'আটরা গিলাতলা',
+      ]
+    },
+    {
+      id: 2,
+      name: 'ডুমুরিয়া',
+      unions: [
+        'ধামালিয়া',
+        'রঘুনাথপুর',
+        'রুদ্রঘরা',
+        'খর্ণিয়া',
+        'আটলিয়া',
+        'মাগুরাঘোনা',
+        'শোভনা',
+        'শরাফপুর',
+        'সাহস',
+        'ভান্ডারপাড়া',
+        'ডুমুরিয়া',
+        'রংপুর',
+        'গুটুদিয়া',
+        'মাগুরখালি',
+      ]
+    },
+  ]
+};
+
+/* export const LOCATIONS = {
   district: 'ব্রাহ্মণবাড়িয়া',
   upazilas: [
     {
@@ -67,7 +104,7 @@ export const LOCATIONS = {
         'শাহবাজপুর',
         'শাহজাদাপুর',
         'সরাইল সদর',
-  ]
+      ]
     },
     {
       id: 5,
@@ -130,7 +167,7 @@ export const LOCATIONS = {
       id: 8,
       name: 'বিজয়নগর',
       unions: [
-        'বুধন্তি',
+        'বुधন্তি',
         'চান্দুরা',
         'ইছাপুরা',
         'চম্পকনগর',
@@ -157,7 +194,7 @@ export const LOCATIONS = {
       ]
     },
   ]
-};
+}; */
 
 // Helper to get just upazila names
 export const UPAZILAS = LOCATIONS.upazilas.map(u => u.name);
