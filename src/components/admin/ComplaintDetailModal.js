@@ -9,6 +9,7 @@ import Input from '@/components/ui/Input';
 import ComplaintTracking from '@/components/complaint/ComplaintTracking';
 import StatusBadge from '@/components/complaint/StatusBadge';
 import StatusSelect from '@/components/ui/StatusSelect';
+import StatusDropdown from '@/components/ui/StatusDropdown';
 import { STATUSES } from '@/constants/statuses';
 import { format } from 'date-fns';
 import { FiUpload, FiX, FiCheckCircle } from 'react-icons/fi';
@@ -329,15 +330,11 @@ export default function ComplaintDetailModal({ complaint, isOpen, onClose, onUpd
                 </h3>
 
                 <form onSubmit={handleStatusUpdate} className="space-y-4">
-                  <Select
+                  <StatusDropdown
                     label="নতুন স্ট্যাটাস"
                     required
                     value={statusForm.statusId}
                     onChange={(e) => setStatusForm(prev => ({ ...prev, statusId: e.target.value }))}
-                    options={STATUSES.map(status => ({
-                      value: status.id,
-                      label: status.name
-                    }))}
                   />
 
                   <div>
