@@ -8,6 +8,7 @@ import Select from '@/components/ui/Select';
 import Input from '@/components/ui/Input';
 import ComplaintTracking from '@/components/complaint/ComplaintTracking';
 import StatusBadge from '@/components/complaint/StatusBadge';
+import StatusSelect from '@/components/ui/StatusSelect';
 import { STATUSES } from '@/constants/statuses';
 import { format } from 'date-fns';
 import { FiUpload, FiX, FiCheckCircle } from 'react-icons/fi';

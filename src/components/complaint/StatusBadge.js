@@ -1,6 +1,17 @@
+//src/components/complaint/StatusBadge.js
 'use client';
+import { getStatusBadgeClasses } from '@/constants/statuses';
 
-import { STATUSES } from '@/constants/statuses';
+export default function StatusBadge({ statusId, statusName }) {
+  const badgeClasses = getStatusBadgeClasses(statusId);
+
+  return (
+    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${badgeClasses}`}>
+      {statusName}
+    </span>
+  );
+}
+/*import { STATUSES } from '@/constants/statuses';
 
 export default function StatusBadge({ statusId, statusName }) {
   const status = STATUSES.find(s => s.id === statusId);
@@ -12,4 +23,4 @@ export default function StatusBadge({ statusId, statusName }) {
       {statusText}
     </span>
   );
-}
+}*/
