@@ -1,9 +1,8 @@
-//src/app/admin/agent/page.js
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import AdminLayout from '@/components/layout/AdminLayout';
 import ComplaintTable from '@/components/admin/ComplaintTable';
 import ComplaintDetailModal from '@/components/admin/ComplaintDetailModal';
@@ -14,7 +13,10 @@ import { FiFileText, FiActivity } from 'react-icons/fi';
 export default function AgentDashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('complaints');
+  const searchParams = useSearchParams();
+  
+  // Get tab from URL or default to 'complaints'
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'complaints');
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
@@ -29,6 +31,14 @@ export default function AgentDashboardPage() {
       fetchComplaints();
     }
   }, [session, status, router]);
+
+  // Update tab from URL params
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   const fetchComplaints = async () => {
     setLoading(true);
@@ -52,6 +62,12 @@ export default function AgentDashboardPage() {
 
   const handleComplaintUpdate = () => {
     fetchComplaints();
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    // Update URL
+    router.push(`/admin/agent?tab=${tab}`, { scroll: false });
   };
 
   if (status === 'loading') {
@@ -83,7 +99,7 @@ export default function AgentDashboardPage() {
         <div className="border-b border-gray-200 dark:border-dark-border">
           <div className="flex overflow-x-auto">
             <button
-              onClick={() => setActiveTab('complaints')}
+              onClick={() => handleTabChange('complaints')}
               className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === 'complaints'
                   ? 'border-primary text-primary'
@@ -94,7 +110,7 @@ export default function AgentDashboardPage() {
               অভিযোগ ব্যবস্থাপনা
             </button>
             <button
-              onClick={() => setActiveTab('activities')}
+              onClick={() => handleTabChange('activities')}
               className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === 'activities'
                   ? 'border-primary text-primary'
