@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AdminLayout from '@/components/layout/AdminLayout';
@@ -10,12 +10,12 @@ import ActivityForm from '@/components/admin/ActivityForm';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { FiFileText, FiActivity } from 'react-icons/fi';
 
-export default function AgentDashboardPage() {
+// Separate component for content that uses useSearchParams
+function AgentDashboardContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  // Get tab from URL or default to 'complaints'
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'complaints');
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,6 @@ export default function AgentDashboardPage() {
     }
   }, [session, status, router]);
 
-  // Update tab from URL params
   useEffect(() => {
     const tab = searchParams.get('tab');
     if (tab) {
@@ -66,7 +65,6 @@ export default function AgentDashboardPage() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    // Update URL
     router.push(`/admin/agent?tab=${tab}`, { scroll: false });
   };
 
@@ -152,5 +150,18 @@ export default function AgentDashboardPage() {
         />
       )}
     </AdminLayout>
+  );
+}
+
+// Main component with Suspense wrapper
+export default function AgentDashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner text="লোড হচ্ছে..." />
+      </div>
+    }>
+      <AgentDashboardContent />
+    </Suspense>
   );
 }

@@ -227,3 +227,16 @@ export default function PoliticianDashboardPage() {
     </AdminLayout>
   );
 }
+
+// Main component with Suspense wrapper
+export default function DeveloperDashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner text="লোড হচ্ছে..." />
+      </div>
+    }>
+      <DeveloperDashboardContent />
+    </Suspense>
+  );
+}

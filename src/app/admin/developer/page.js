@@ -1,7 +1,6 @@
-//src/app/admin/developer/page.js
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AdminLayout from '@/components/layout/AdminLayout';
@@ -13,7 +12,8 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Button from '@/components/ui/Button';
 import { FiBarChart2, FiFileText, FiUsers, FiSettings } from 'react-icons/fi';
 
-export default function DeveloperDashboardPage() {
+// Separate component for content that uses useSearchParams
+function DeveloperDashboardContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -297,5 +297,18 @@ export default function DeveloperDashboardPage() {
         />
       )}
     </AdminLayout>
+  );
+}
+
+// Main component with Suspense wrapper
+export default function DeveloperDashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner text="লোড হচ্ছে..." />
+      </div>
+    }>
+      <DeveloperDashboardContent />
+    </Suspense>
   );
 }
