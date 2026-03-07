@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import AdminLayout from '@/components/layout/AdminLayout';
 import StatsDashboard from '@/components/admin/StatsDashboard';
 import ComplaintTable from '@/components/admin/ComplaintTable';
@@ -11,10 +11,13 @@ import AgentManager from '@/components/admin/AgentManager';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { FiBarChart2, FiFileText, FiUsers } from 'react-icons/fi';
 
-export default function PoliticianDashboardPage() {
+// Separate component for content that uses useSearchParams
+function PoliticianDashboardContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('stats');
+  const searchParams = useSearchParams();
+  
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'stats');
   const [complaints, setComplaints] = useState([]);
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +33,13 @@ export default function PoliticianDashboardPage() {
       fetchData();
     }
   }, [session, status, router]);
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -47,16 +57,10 @@ export default function PoliticianDashboardPage() {
 
   const fetchComplaints = async () => {
     try {
-      console.log('Fetching complaints...');
       const response = await fetch('/api/complaints');
-      console.log('Response status:', response.status);
-      
       if (response.ok) {
         const data = await response.json();
-        console.log('Complaints data:', data);
         setComplaints(data.data || []);
-      } else {
-        console.error('Failed to fetch complaints:', response.status);
       }
     } catch (error) {
       console.error('Error fetching complaints:', error);
@@ -65,16 +69,10 @@ export default function PoliticianDashboardPage() {
 
   const fetchAgents = async () => {
     try {
-      console.log('Fetching agents...');
       const response = await fetch('/api/admin/agents');
-      console.log('Agents response status:', response.status);
-      
       if (response.ok) {
         const data = await response.json();
-        console.log('Agents data:', data);
         setAgents(data.data || []);
-      } else {
-        console.error('Failed to fetch agents:', response.status);
       }
     } catch (error) {
       console.error('Error fetching agents:', error);
@@ -88,6 +86,11 @@ export default function PoliticianDashboardPage() {
 
   const handleComplaintUpdate = () => {
     fetchComplaints();
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    router.push(`/admin/politician?tab=${tab}`, { scroll: false });
   };
 
   if (status === 'loading' || loading) {
@@ -107,7 +110,7 @@ export default function PoliticianDashboardPage() {
       {/* Welcome Message */}
       <div className="card p-6 mb-6 bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          স্বাগতম, {session.user.name}
+          স্বাগতম, {session.user.name || 'রাজনীতিবিদ'}
         </h2>
         <p className="text-gray-600 dark:text-gray-400">
           রাজনীতিবিদ প্যানেলে আপনাকে স্বাগতম। এখান থেকে আপনি সম্পূর্ণ সিস্টেম পরিচালনা করতে পারবেন।
@@ -158,7 +161,7 @@ export default function PoliticianDashboardPage() {
         <div className="border-b border-gray-200 dark:border-dark-border">
           <div className="flex overflow-x-auto">
             <button
-              onClick={() => setActiveTab('stats')}
+              onClick={() => handleTabChange('stats')}
               className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === 'stats'
                   ? 'border-primary text-primary'
@@ -169,7 +172,7 @@ export default function PoliticianDashboardPage() {
               পরিসংখ্যান
             </button>
             <button
-              onClick={() => setActiveTab('complaints')}
+              onClick={() => handleTabChange('complaints')}
               className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === 'complaints'
                   ? 'border-primary text-primary'
@@ -180,7 +183,7 @@ export default function PoliticianDashboardPage() {
               অভিযোগসমূহ ({complaints.length})
             </button>
             <button
-              onClick={() => setActiveTab('agents')}
+              onClick={() => handleTabChange('agents')}
               className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === 'agents'
                   ? 'border-primary text-primary'
@@ -229,14 +232,14 @@ export default function PoliticianDashboardPage() {
 }
 
 // Main component with Suspense wrapper
-export default function DeveloperDashboardPage() {
+export default function PoliticianDashboardPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner text="লোড হচ্ছে..." />
       </div>
     }>
-      <DeveloperDashboardContent />
+      <PoliticianDashboardContent />
     </Suspense>
   );
 }
