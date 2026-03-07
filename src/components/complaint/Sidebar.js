@@ -31,6 +31,8 @@ export default function Sidebar({ role }) {
 
   const filteredItems = menuItems.filter(item => 
     item.roles.includes(role)
+
+  
   );
 
   return (

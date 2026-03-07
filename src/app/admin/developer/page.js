@@ -3,20 +3,22 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import AdminLayout from '@/components/layout/AdminLayout';
 import StatsDashboard from '@/components/admin/StatsDashboard';
 import ComplaintTable from '@/components/admin/ComplaintTable';
 import ComplaintDetailModal from '@/components/admin/ComplaintDetailModal';
 import AgentManager from '@/components/admin/AgentManager';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import { FiBarChart2, FiFileText, FiUsers, FiSettings } from 'react-icons/fi';
 import Button from '@/components/ui/Button';
+import { FiBarChart2, FiFileText, FiUsers, FiSettings } from 'react-icons/fi';
 
 export default function DeveloperDashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('stats');
+  const searchParams = useSearchParams();
+  
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'stats');
   const [complaints, setComplaints] = useState([]);
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,6 +34,13 @@ export default function DeveloperDashboardPage() {
       fetchData();
     }
   }, [session, status, router]);
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -78,6 +87,11 @@ export default function DeveloperDashboardPage() {
 
   const handleComplaintUpdate = () => {
     fetchComplaints();
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    router.push(`/admin/developer?tab=${tab}`, { scroll: false });
   };
 
   if (status === 'loading' || loading) {
@@ -148,7 +162,7 @@ export default function DeveloperDashboardPage() {
         <div className="border-b border-gray-200 dark:border-dark-border">
           <div className="flex overflow-x-auto">
             <button
-              onClick={() => setActiveTab('stats')}
+              onClick={() => handleTabChange('stats')}
               className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === 'stats'
                   ? 'border-primary text-primary'
@@ -159,7 +173,7 @@ export default function DeveloperDashboardPage() {
               পরিসংখ্যান
             </button>
             <button
-              onClick={() => setActiveTab('complaints')}
+              onClick={() => handleTabChange('complaints')}
               className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === 'complaints'
                   ? 'border-primary text-primary'
@@ -170,7 +184,7 @@ export default function DeveloperDashboardPage() {
               অভিযোগসমূহ
             </button>
             <button
-              onClick={() => setActiveTab('agents')}
+              onClick={() => handleTabChange('agents')}
               className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === 'agents'
                   ? 'border-primary text-primary'
@@ -181,7 +195,7 @@ export default function DeveloperDashboardPage() {
               এজেন্ট ব্যবস্থাপনা
             </button>
             <button
-              onClick={() => setActiveTab('system')}
+              onClick={() => handleTabChange('system')}
               className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === 'system'
                   ? 'border-primary text-primary'
