@@ -1,7 +1,7 @@
 // Complaint categories constants
 export const CATEGORIES = [
   { id: 1, name: 'অবকাঠামো', nameEn: 'Infrastructure' },
-  { id: 2, name: 'পানি ও পয়ঃনিষ্কাশন', nameEn: 'Water & Sanitation' },
+  { id: 2, name: 'জলাবদ্ধতা ও পয়ঃনিষ্কাশন', nameEn: 'Water & Sanitation' },
   { id: 3, name: 'বিদ্যুৎ ও গ্যাস', nameEn: 'Utilities' },
   { id: 4, name: 'পরিবহন ও যানজট', nameEn: 'Transportation' },
   { id: 5, name: 'পরিবেশ ও স্বাস্থ্য', nameEn: 'Environment & Health' },
@@ -15,4 +15,5 @@ export const CATEGORIES = [
   { id: 13, name: 'নাগরিক সেবা', nameEn: 'Citizen Services' },
   { id: 14, name: 'ইন্টারনেট ও টেলিযোগাযোগ', nameEn: 'ICT & Communication' },
   { id: 15, name: 'আবাসন ও ভূমি', nameEn: 'Housing & Land' },
+  { id: 16, name: 'অন্যান্য', nameEn: 'Other Issues' },
 ];
