@@ -3,7 +3,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiChevronDown, FiCheck } from 'react-icons/fi';
-import { STATUSES } from '@/constants/statuses';
+
+const STATUSES = [
+  { id: 1, name: 'সমস্যা/অভিযোগ জমা হয়েছে', color: 'gray' },
+  { id: 2, name: 'সমস্যা/অভিযোগটি গ্রহণ করা হয়েছে', color: 'blue' },
+  { id: 3, name: 'সমস্যাটি সমাধানের জন্য দেয়া হয়েছে', color: 'amber' },
+  { id: 4, name: 'সমাধান প্রক্রিয়াধীন', color: 'orange' },
+  { id: 5, name: 'সমাধান করা হয়েছে', color: 'green' }
+];
 
 export default function StatusDropdown({ label, value, onChange, required, error }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,9 +58,9 @@ export default function StatusDropdown({ label, value, onChange, required, error
   };
 
   return (
-    <div className="mb-4" ref={dropdownRef}>
+    <div className="mb-4 relative" ref={dropdownRef}>
       {label && (
-        <label className="label">
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -75,10 +82,10 @@ export default function StatusDropdown({ label, value, onChange, required, error
           {selectedStatus ? (
             <>
               <span className={`w-3 h-3 rounded-full flex-shrink-0 ${getStatusDotColor(selectedStatus.id)}`} />
-              <span className="font-medium truncate">{selectedStatus.name}</span>
+              <span className="font-medium text-sm">{selectedStatus.name}</span>
             </>
           ) : (
-            <span className="text-gray-500 dark:text-gray-400">স্ট্যাটাস নির্বাচন করুন</span>
+            <span className="text-gray-500 dark:text-gray-400 text-sm">স্ট্যাটাস নির্বাচন করুন</span>
           )}
         </div>
         <FiChevronDown 
@@ -94,7 +101,7 @@ export default function StatusDropdown({ label, value, onChange, required, error
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute z-50 mt-2 w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+            className="absolute z-50 mt-2 w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
           >
             <div className="max-h-64 overflow-y-auto">
               {STATUSES.map((status) => {
@@ -105,14 +112,14 @@ export default function StatusDropdown({ label, value, onChange, required, error
                     key={status.id}
                     type="button"
                     onClick={() => handleSelect(status.id)}
-                    className={`w-full px-4 py-3 flex items-center gap-3 transition-all ${
+                    className={`w-full px-4 py-3 flex items-center gap-3 transition-all text-left ${
                       isSelected 
                         ? getStatusColorClasses(status.id) + ' font-semibold'
                         : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white'
                     }`}
                   >
                     <span className={`w-3 h-3 rounded-full flex-shrink-0 ${getStatusDotColor(status.id)}`} />
-                    <span className="flex-1 text-left text-sm">{status.name}</span>
+                    <span className="flex-1 text-sm">{status.name}</span>
                     {isSelected && (
                       <FiCheck className="w-5 h-5 flex-shrink-0" />
                     )}
