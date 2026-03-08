@@ -4,15 +4,11 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
-import Select from '@/components/ui/Select';
-import Input from '@/components/ui/Input';
+import StatusDropdown from '@/components/ui/StatusDropdown';
 import ComplaintTracking from '@/components/complaint/ComplaintTracking';
 import StatusBadge from '@/components/complaint/StatusBadge';
-import StatusSelect from '@/components/ui/StatusSelect';
-import StatusDropdown from '@/components/ui/StatusDropdown';
-import { STATUSES } from '@/constants/statuses';
 import { format } from 'date-fns';
-import { FiUpload, FiX, FiCheckCircle } from 'react-icons/fi';
+import { FiUpload, FiX } from 'react-icons/fi';
 import Image from 'next/image';
 
 export default function ComplaintDetailModal({ complaint, isOpen, onClose, onUpdate }) {
@@ -135,6 +131,15 @@ export default function ComplaintDetailModal({ complaint, isOpen, onClose, onUpd
         }
         console.log('Image uploaded:', solutionImageUrl);
       }
+
+      // Import STATUSES to get status name
+      const STATUSES = [
+        { id: 1, name: 'সমস্যা/অভিযোগ জমা হয়েছে' },
+        { id: 2, name: 'সমস্যা/অভিযোগটি গ্রহণ করা হয়েছে' },
+        { id: 3, name: 'সমস্যাটি সমাধানের জন্য দেয়া হয়েছে' },
+        { id: 4, name: 'সমাধান প্রক্রিয়াধীন' },
+        { id: 5, name: 'সমাধান করা হয়েছে' }
+      ];
 
       const selectedStatus = STATUSES.find(s => s.id === parseInt(statusForm.statusId));
       console.log('Selected status:', selectedStatus);
@@ -330,6 +335,7 @@ export default function ComplaintDetailModal({ complaint, isOpen, onClose, onUpd
                 </h3>
 
                 <form onSubmit={handleStatusUpdate} className="space-y-4">
+                  {/* Use Custom StatusDropdown Component */}
                   <StatusDropdown
                     label="নতুন স্ট্যাটাস"
                     required
