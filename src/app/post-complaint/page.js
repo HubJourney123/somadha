@@ -158,26 +158,7 @@ export default function PostComplaintPage() {
               </div>
             </motion.div>
 
-            {/* Trust Badges */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.4 }}
-              className="mt-8 flex flex-wrap justify-center gap-4 text-sm text-neutral-600 dark:text-neutral-400"
-            >
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-dark-card/50 rounded-full border border-secondary-200 dark:border-dark-border">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span>সম্পূর্ণ গোপনীয়</span>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-dark-card/50 rounded-full border border-secondary-200 dark:border-dark-border">
-                <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                <span>দ্রুত প্রতিক্রিয়া</span>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-dark-card/50 rounded-full border border-secondary-200 dark:border-dark-border">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                <span>রিয়েল-টাইম ট্র্যাকিং</span>
-              </div>
-            </motion.div>
+            
           </motion.div>
         </div>
       </main>
