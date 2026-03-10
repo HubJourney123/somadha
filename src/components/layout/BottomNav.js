@@ -34,12 +34,12 @@ export default function BottomNav() {
   const handleTap = () => {
     // Haptic feedback for mobile devices
     if ('vibrate' in navigator) {
-      navigator.vibrate(20); // Light tap - 20ms
+      navigator.vibrate(10); // Light tap - 10ms
     }
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white dark:bg-dark-card border-t border-gray-200 dark:border-dark-border shadow-lg md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-dark-card/95 backdrop-blur-sm border-t border-secondary-200 dark:border-dark-border shadow-lg md:hidden">
       <div className="grid grid-cols-3 h-16">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
@@ -53,7 +53,7 @@ export default function BottomNav() {
               className={`flex flex-col items-center justify-center gap-1 transition-colors relative ${
                 isActive
                   ? 'text-primary'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary'
+                  : 'text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-primary'
               }`}
             >
               {isActive && (

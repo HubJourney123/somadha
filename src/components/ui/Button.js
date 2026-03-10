@@ -14,11 +14,12 @@ export default function Button({
   const baseStyles = 'font-semibold rounded-lg transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2';
   
   const variants = {
-    primary: 'bg-primary hover:bg-primary-dark text-white',
-    secondary: 'bg-gray-200 dark:bg-dark-card hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white',
-    outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-white dark:border-primary dark:text-primary',
-    danger: 'bg-red-500 hover:bg-red-600 text-white',
-    success: 'bg-green-500 hover:bg-green-600 text-white',
+    primary: 'bg-primary hover:bg-primary-600 text-white shadow-md hover:shadow-lg',
+    secondary: 'bg-secondary hover:bg-secondary-500 text-neutral-900 dark:text-neutral-100 shadow-sm hover:shadow-md',
+    outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-white',
+    ghost: 'text-neutral-700 dark:text-neutral-300 hover:bg-secondary-100 dark:hover:bg-neutral-800',
+    danger: 'bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-lg',
+    success: 'bg-green-500 hover:bg-green-600 text-white shadow-md hover:shadow-lg',
   };
 
   const sizes = {

@@ -35,8 +35,8 @@ export default function StatsSection() {
       title: 'মোট অভিযোগ',
       value: stats.total,
       icon: FiFileText,
-      color: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800',
-      iconColor: 'text-blue-600 dark:text-blue-400',
+      color: 'bg-secondary-50 dark:bg-secondary-900/20 border-secondary-200 dark:border-secondary-800',
+      iconColor: 'text-primary dark:text-primary-400',
       clickable: true
     },
     {
@@ -51,23 +51,23 @@ export default function StatsSection() {
       title: 'প্রক্রিয়াধীন',
       value: stats.inProgress,
       icon: FiClock,
-      color: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800',
-      iconColor: 'text-orange-600 dark:text-orange-400',
+      color: 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800',
+      iconColor: 'text-primary-600 dark:text-primary-400',
       clickable: true
     },
     {
       title: 'অপেক্ষমাণ',
       value: stats.pending,
       icon: FiAlertCircle,
-      color: 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-800',
-      iconColor: 'text-gray-600 dark:text-gray-400',
+      color: 'bg-neutral-100 dark:bg-neutral-900/20 border-neutral-300 dark:border-neutral-800',
+      iconColor: 'text-neutral-600 dark:text-neutral-400',
       clickable: true
     }
   ];
 
   return (
     <div>
-      <h2 className="section-title text-center mb-6">পরিসংখ্যান</h2>
+      <h2 className="heading-2 text-center mb-8">পরিসংখ্যান</h2>
       
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {statCards.map((card, index) => {
@@ -85,16 +85,16 @@ export default function StatsSection() {
               className={`${card.color} border rounded-xl p-4 md:p-6 transition-all hover:shadow-lg cursor-pointer relative overflow-hidden group`}
             >
               {/* Hover Gradient Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-transparent dark:from-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
               
               <div className="flex flex-col items-center text-center relative z-10">
-                <div className={`w-10 h-10 md:w-12 md:h-12 ${card.color} rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-                  <Icon className={`w-5 h-5 md:w-6 md:h-6 ${card.iconColor}`} />
+                <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform bg-white/50 dark:bg-white/5`}>
+                  <Icon className={`w-6 h-6 md:w-7 md:h-7 ${card.iconColor}`} />
                 </div>
-                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-1">
+                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white mb-1">
                   {card.value}
                 </p>
-                <p className="text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-400">
+                <p className="text-xs md:text-sm font-semibold text-neutral-700 dark:text-neutral-300">
                   {card.title}
                 </p>
                 
@@ -119,7 +119,7 @@ export default function StatsSection() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6"
+        className="text-center text-sm text-neutral-500 dark:text-neutral-400 mt-6"
       >
         যেকোনো কার্ডে ক্লিক করে বিস্তারিত পরিসংখ্যান দেখুন
       </motion.p>

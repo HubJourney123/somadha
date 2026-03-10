@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiChevronDown, FiCheck } from 'react-icons/fi';
 
 const STATUSES = [
-  { id: 1, name: 'সমস্যা/অভিযোগ জমা হয়েছে', color: 'gray' },
+  { id: 1, name: 'সমস্যা/অভিযোগ জমা হয়েছে', color: 'neutral' },
   { id: 2, name: 'সমস্যা/অভিযোগটি গ্রহণ করা হয়েছে', color: 'blue' },
-  { id: 3, name: 'সমস্যাটি সমাধানের জন্য দেয়া হয়েছে', color: 'amber' },
-  { id: 4, name: 'সমাধান প্রক্রিয়াধীন', color: 'orange' },
+  { id: 3, name: 'সমস্যাটি সমাধানের জন্য দেয়া হয়েছে', color: 'secondary' },
+  { id: 4, name: 'সমাধান প্রক্রিয়াধীন', color: 'primary' },
   { id: 5, name: 'সমাধান করা হয়েছে', color: 'green' }
 ];
 
@@ -37,30 +37,30 @@ export default function StatusDropdown({ label, value, onChange, required, error
 
   const getStatusColorClasses = (statusId) => {
     const colorMap = {
-      1: 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white',
+      1: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white',
       2: 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100',
-      3: 'bg-amber-100 dark:bg-amber-900 text-amber-900 dark:text-amber-100',
-      4: 'bg-orange-100 dark:bg-orange-900 text-orange-900 dark:text-orange-100',
+      3: 'bg-secondary-200 dark:bg-secondary-800 text-secondary-900 dark:text-secondary-100',
+      4: 'bg-primary-100 dark:bg-primary-900 text-primary-900 dark:text-primary-100',
       5: 'bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100',
     };
-    return colorMap[statusId] || 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white';
+    return colorMap[statusId] || 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white';
   };
 
   const getStatusDotColor = (statusId) => {
     const colorMap = {
-      1: 'bg-gray-500',
+      1: 'bg-neutral-500',
       2: 'bg-blue-500',
-      3: 'bg-amber-500',
-      4: 'bg-orange-500',
+      3: 'bg-secondary-600',
+      4: 'bg-primary',
       5: 'bg-green-500',
     };
-    return colorMap[statusId] || 'bg-gray-500';
+    return colorMap[statusId] || 'bg-neutral-500';
   };
 
   return (
     <div className="mb-4 relative" ref={dropdownRef}>
       {label && (
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+        <label className="label">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -73,8 +73,8 @@ export default function StatusDropdown({ label, value, onChange, required, error
         className={`w-full px-4 py-3 rounded-lg border ${
           error 
             ? 'border-red-500 focus:ring-red-500' 
-            : 'border-gray-300 dark:border-gray-600 focus:ring-primary'
-        } bg-white dark:bg-gray-800 text-left flex items-center justify-between transition-all ${
+            : 'border-secondary-300 dark:border-neutral-600 focus:ring-primary'
+        } bg-white dark:bg-dark-card text-left flex items-center justify-between transition-all ${
           isOpen ? 'ring-2 ring-primary' : ''
         } ${selectedStatus ? getStatusColorClasses(selectedStatus.id) : ''}`}
       >
@@ -85,7 +85,7 @@ export default function StatusDropdown({ label, value, onChange, required, error
               <span className="font-medium text-sm">{selectedStatus.name}</span>
             </>
           ) : (
-            <span className="text-gray-500 dark:text-gray-400 text-sm">স্ট্যাটাস নির্বাচন করুন</span>
+            <span className="text-neutral-500 dark:text-neutral-400 text-sm">স্ট্যাটাস নির্বাচন করুন</span>
           )}
         </div>
         <FiChevronDown 
@@ -101,7 +101,7 @@ export default function StatusDropdown({ label, value, onChange, required, error
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute z-50 mt-2 w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+            className="absolute z-50 mt-2 w-full bg-white dark:bg-dark-card rounded-lg shadow-xl border border-secondary-200 dark:border-neutral-700 overflow-hidden"
           >
             <div className="max-h-64 overflow-y-auto">
               {STATUSES.map((status) => {
@@ -115,7 +115,7 @@ export default function StatusDropdown({ label, value, onChange, required, error
                     className={`w-full px-4 py-3 flex items-center gap-3 transition-all text-left ${
                       isSelected 
                         ? getStatusColorClasses(status.id) + ' font-semibold'
-                        : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white'
+                        : 'hover:bg-secondary-50 dark:hover:bg-neutral-800 text-neutral-900 dark:text-white'
                     }`}
                   >
                     <span className={`w-3 h-3 rounded-full flex-shrink-0 ${getStatusDotColor(status.id)}`} />

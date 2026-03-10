@@ -4,8 +4,8 @@
   "description": "ব্রাহ্মণবাড়িয়া অভিযোগ ব্যবস্থাপনা প্ল্যাটফর্ম",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ff9248",
+  "background_color": "#FAF7F4",
+  "theme_color": "#D97B41",
   "icons": [
     {
       "src": "/icon-192.png",
