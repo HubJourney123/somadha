@@ -11,21 +11,21 @@ export default function Button({
   type = 'button',
   className = ''
 }) {
-  const baseStyles = 'font-semibold rounded-lg transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2';
+  const baseStyles = 'font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2';
   
   const variants = {
-    primary: 'bg-primary hover:bg-primary-600 text-white shadow-md hover:shadow-lg',
-    secondary: 'bg-secondary hover:bg-secondary-500 text-neutral-900 dark:text-neutral-100 shadow-sm hover:shadow-md',
+    primary: 'bg-primary hover:bg-primary-600 text-white',
+    secondary: 'bg-secondary hover:bg-secondary-500 text-neutral-900 dark:text-neutral-100',
     outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-white',
     ghost: 'text-neutral-700 dark:text-neutral-300 hover:bg-secondary-100 dark:hover:bg-neutral-800',
-    danger: 'bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-lg',
-    success: 'bg-green-500 hover:bg-green-600 text-white shadow-md hover:shadow-lg',
+    danger: 'bg-red-500 hover:bg-red-600 text-white',
+    success: 'bg-green-500 hover:bg-green-600 text-white',
   };
 
   const sizes = {
     sm: 'py-2 px-4 text-sm',
-    md: 'py-3 px-6 text-base',
-    lg: 'py-4 px-8 text-lg',
+    md: 'py-2.5 px-5 text-base',
+    lg: 'py-3 px-6 text-base',
   };
 
   const widthClass = fullWidth ? 'w-full' : '';
