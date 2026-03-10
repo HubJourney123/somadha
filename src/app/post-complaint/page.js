@@ -4,65 +4,210 @@ import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import ComplaintForm from '@/components/complaint/ComplaintForm';
 import { motion } from 'framer-motion';
+import { FiAlertCircle, FiMapPin, FiFileText, FiCamera, FiCheckCircle } from 'react-icons/fi';
 
 export default function PostComplaintPage() {
+  const steps = [
+    {
+      icon: FiAlertCircle,
+      text: 'আপনার সমস্যার ধরন নির্বাচন করুন',
+      color: 'text-primary'
+    },
+    {
+      icon: FiMapPin,
+      text: 'সমস্যার স্থান (উপজেলা ও ইউনিয়ন) নির্বাচন করুন',
+      color: 'text-blue-600'
+    },
+    {
+      icon: FiFileText,
+      text: 'সমস্যার বিস্তারিত বর্ণনা লিখুন',
+      color: 'text-purple-600'
+    },
+    {
+      icon: FiCamera,
+      text: 'সম্ভব হলে সমস্যার ছবি যুক্ত করুন',
+      color: 'text-green-600'
+    },
+    {
+      icon: FiCheckCircle,
+      text: 'অভিযোগ জমা দিন এবং আপনার ইউনিক আইডি সংরক্ষণ করুন',
+      color: 'text-primary'
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg">
+    <div className="min-h-screen bg-gradient-to-br from-secondary-50 via-white to-secondary-100 dark:from-dark-bg dark:via-dark-bg dark:to-dark-card">
       <Header />
       
-      <main className="container-padding with-bottom-nav py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-3xl mx-auto"
-        >
-          {/* Page Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
-              সমস্যা/অভিযোগ পোস্ট করুন
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              আপনার সমস্যার বিস্তারিত তথ্য দিন। আমরা দ্রুত সমাধানের চেষ্টা করব।
-            </p>
-          </div>
+      <main className="with-bottom-nav py-8">
+        {/* Decorative Background Elements */}
+        <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden opacity-30">
+          <div className="absolute top-20 right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse-slow" />
+          <div className="absolute bottom-20 left-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse-slow" />
+        </div>
 
-          {/* Complaint Form */}
-          <ComplaintForm />
-
-          {/* Info Box */}
+        <div className="relative z-10 px-4 md:px-6">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="card p-6 mt-8 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-4xl mx-auto"
           >
-            <h3 className="font-bold text-gray-900 dark:text-white mb-3">
-              📋 কিভাবে অভিযোগ জমা দেবেন?
-            </h3>
-            <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold">১.</span>
-                <span>আপনার সমস্যার ধরন নির্বাচন করুন</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold">২.</span>
-                <span>সমস্যার স্থান (উপজেলা ও ইউনিয়ন) নির্বাচন করুন</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold">৩.</span>
-                <span>সমস্যার বিস্তারিত বর্ণনা লিখুন</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold">৪.</span>
-                <span>সম্ভব হলে সমস্যার ছবি যুক্ত করুন</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold">৫.</span>
-                <span>অভিযোগ জমা দিন এবং আপনার ইউনিক আইডি সংরক্ষণ করুন</span>
-              </li>
-            </ul>
+            {/* Page Header with Icon */}
+            <div className="text-center mb-10">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary-600 rounded-2xl shadow-lg mb-6"
+              >
+                <FiAlertCircle className="w-10 h-10 text-white" />
+              </motion.div>
+              
+              <motion.h1
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-3xl md:text-5xl font-bold text-neutral-900 dark:text-white mb-4"
+              >
+                সমস্যা/অভিযোগ পোস্ট করুন
+              </motion.h1>
+              
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto"
+              >
+                আপনার সমস্যার বিস্তারিত তথ্য দিন। আমরা দ্রুত সমাধানের চেষ্টা করব।
+              </motion.p>
+            </div>
+
+            {/* Stats Cards - Quick Info */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="grid grid-cols-3 gap-3 md:gap-4 mb-8"
+            >
+              <div className="bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm rounded-xl p-4 border border-secondary-200 dark:border-dark-border text-center">
+                <div className="text-2xl font-bold text-primary mb-1">২-৩</div>
+                <div className="text-xs text-neutral-600 dark:text-neutral-400">মিনিটে সম্পন্ন</div>
+              </div>
+              <div className="bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm rounded-xl p-4 border border-secondary-200 dark:border-dark-border text-center">
+                <div className="text-2xl font-bold text-green-600 mb-1">২৪</div>
+                <div className="text-xs text-neutral-600 dark:text-neutral-400">ঘণ্টায় রেসপন্স</div>
+              </div>
+              <div className="bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm rounded-xl p-4 border border-secondary-200 dark:border-dark-border text-center">
+                <div className="text-2xl font-bold text-blue-600 mb-1">১০০%</div>
+                <div className="text-xs text-neutral-600 dark:text-neutral-400">নিরাপদ</div>
+              </div>
+            </motion.div>
+
+            {/* Complaint Form Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="bg-white/90 dark:bg-dark-card/90 backdrop-blur-sm rounded-2xl shadow-xl border border-secondary-200 dark:border-dark-border overflow-hidden"
+            >
+              <ComplaintForm />
+            </motion.div>
+
+            {/* How to Submit - Redesigned */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mt-8"
+            >
+              <div className="bg-gradient-to-br from-primary/5 to-secondary/10 dark:from-primary/10 dark:to-secondary/5 rounded-2xl p-6 md:p-8 border border-primary/20 dark:border-primary/30">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-primary/20 dark:bg-primary/30 rounded-lg flex items-center justify-center">
+                    <span className="text-2xl">📋</span>
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold text-neutral-900 dark:text-white">
+                    কিভাবে অভিযোগ জমা দেবেন?
+                  </h3>
+                </div>
+
+                <div className="space-y-4">
+                  {steps.map((step, index) => {
+                    const Icon = step.icon;
+                    return (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.6 + index * 0.1 }}
+                        className="flex items-start gap-4 p-4 bg-white/50 dark:bg-dark-card/50 rounded-xl border border-secondary-200/50 dark:border-dark-border/50 hover:border-primary/30 transition-all group"
+                      >
+                        <div className="flex-shrink-0">
+                          <div className="w-12 h-12 bg-gradient-to-br from-white to-secondary-100 dark:from-dark-card dark:to-dark-bg rounded-xl flex items-center justify-center border border-secondary-200 dark:border-dark-border group-hover:scale-110 transition-transform">
+                            <Icon className={`w-6 h-6 ${step.color}`} />
+                          </div>
+                        </div>
+                        <div className="flex-1 pt-2">
+                          <div className="flex items-center gap-3 mb-1">
+                            <span className="text-lg font-bold text-primary">
+                              {index + 1}
+                            </span>
+                            <div className="h-px flex-1 bg-gradient-to-r from-secondary-300 to-transparent dark:from-neutral-700" />
+                          </div>
+                          <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed">
+                            {step.text}
+                          </p>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+
+                {/* Extra Tips */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.2 }}
+                  className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">💡</span>
+                    <div>
+                      <h4 className="font-bold text-neutral-900 dark:text-white mb-2">
+                        টিপস
+                      </h4>
+                      <ul className="text-sm text-neutral-700 dark:text-neutral-300 space-y-1">
+                        <li>• যত বিস্তারিত তথ্য দেবেন, সমাধান তত দ্রুত হবে</li>
+                        <li>• স্পষ্ট ছবি সমস্যা বুঝতে সাহায্য করে</li>
+                        <li>• আপনার ইউনিক আইডি অবশ্যই সংরক্ষণ করুন</li>
+                      </ul>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Trust Badges */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.4 }}
+              className="mt-8 flex flex-wrap justify-center gap-4 text-sm text-neutral-600 dark:text-neutral-400"
+            >
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-dark-card/50 rounded-full border border-secondary-200 dark:border-dark-border">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span>সম্পূর্ণ গোপনীয়</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-dark-card/50 rounded-full border border-secondary-200 dark:border-dark-border">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                <span>দ্রুত প্রতিক্রিয়া</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-dark-card/50 rounded-full border border-secondary-200 dark:border-dark-border">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                <span>রিয়েল-টাইম ট্র্যাকিং</span>
+              </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
+        </div>
       </main>
 
       <BottomNav />
