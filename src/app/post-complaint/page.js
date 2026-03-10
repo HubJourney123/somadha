@@ -82,26 +82,7 @@ export default function PostComplaintPage() {
               </motion.p>
             </div>
 
-            {/* Stats Cards - Quick Info */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="grid grid-cols-3 gap-3 md:gap-4 mb-8"
-            >
-              <div className="bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm rounded-xl p-4 border border-secondary-200 dark:border-dark-border text-center">
-                <div className="text-2xl font-bold text-primary mb-1">২-৩</div>
-                <div className="text-xs text-neutral-600 dark:text-neutral-400">মিনিটে সম্পন্ন</div>
-              </div>
-              <div className="bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm rounded-xl p-4 border border-secondary-200 dark:border-dark-border text-center">
-                <div className="text-2xl font-bold text-green-600 mb-1">২৪</div>
-                <div className="text-xs text-neutral-600 dark:text-neutral-400">ঘণ্টায় রেসপন্স</div>
-              </div>
-              <div className="bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm rounded-xl p-4 border border-secondary-200 dark:border-dark-border text-center">
-                <div className="text-2xl font-bold text-blue-600 mb-1">১০০%</div>
-                <div className="text-xs text-neutral-600 dark:text-neutral-400">নিরাপদ</div>
-              </div>
-            </motion.div>
+
 
             {/* Complaint Form Card */}
             <motion.div
@@ -171,16 +152,7 @@ export default function PostComplaintPage() {
                 >
                   <div className="flex items-start gap-3">
                     <span className="text-2xl">💡</span>
-                    <div>
-                      <h4 className="font-bold text-neutral-900 dark:text-white mb-2">
-                        টিপস
-                      </h4>
-                      <ul className="text-sm text-neutral-700 dark:text-neutral-300 space-y-1">
-                        <li>• যত বিস্তারিত তথ্য দেবেন, সমাধান তত দ্রুত হবে</li>
-                        <li>• স্পষ্ট ছবি সমস্যা বুঝতে সাহায্য করে</li>
-                        <li>• আপনার ইউনিক আইডি অবশ্যই সংরক্ষণ করুন</li>
-                      </ul>
-                    </div>
+                    
                   </div>
                 </motion.div>
               </div>
