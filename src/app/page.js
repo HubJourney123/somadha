@@ -48,9 +48,9 @@ export default function HomePage() {
         <div className="min-h-screen bg-secondary-50 dark:bg-dark-bg">
           <Header />
           
-          <main className="container-padding with-bottom-nav">
+          <main className="with-bottom-nav">
             {/* Hero Section */}
-            <section className="py-6 space-y-6">
+            <section className="py-6 px-4 md:px-6 space-y-6">
               {/* Carousel at top */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -135,27 +135,23 @@ export default function HomePage() {
               </motion.div>
             </section>
 
-            {/* Stats Section - Constrained Width */}
-            <section className="py-8">
-              <div className="max-w-5xl mx-auto">
-                <StatsSection />
-              </div>
+            {/* Stats Section - With Margin */}
+            <section className="py-8 px-4 md:px-6">
+              <StatsSection />
             </section>
 
-            {/* About Section - Constrained Width */}
-            <section className="py-8">
-              <div className="max-w-4xl mx-auto">
-                <AboutSection />
-              </div>
+            {/* About Section - With Margin */}
+            <section className="py-8 px-4 md:px-6">
+              <AboutSection />
             </section>
 
-            {/* Activities Section */}
-            <section className="py-8">
+            {/* Activities Section - With Margin */}
+            <section className="py-8 px-4 md:px-6">
               <ActivitiesSection />
             </section>
 
-            {/* Footer */}
-            <footer className="py-12 border-t border-secondary-200 dark:border-neutral-700">
+            {/* Footer - With Margin */}
+            <footer className="py-12 px-4 md:px-6 border-t border-secondary-200 dark:border-neutral-700">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-4">
                   <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
