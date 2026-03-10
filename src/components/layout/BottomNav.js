@@ -18,8 +18,8 @@ export default function BottomNav() {
       name: 'হোম',
       href: '/',
       icon: FiHome,
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50 dark:bg-blue-950',
+      color: 'from-primary to-orange-600',
+      bgColor: 'bg-orange-50 dark:bg-orange-950',
     },
     {
       name: 'সমস্যা পোস্ট করুন',
@@ -33,8 +33,8 @@ export default function BottomNav() {
       name: 'ড্যাশবোর্ড',
       href: '/dashboard',
       icon: FiGrid,
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'bg-purple-50 dark:bg-purple-950',
+      color: 'from-primary to-orange-600',
+      bgColor: 'bg-orange-50 dark:bg-orange-950',
     },
   ];
 
