@@ -34,7 +34,7 @@ export default function BottomNav() {
   const handleTap = () => {
     // Haptic feedback for mobile devices
     if ('vibrate' in navigator) {
-      navigator.vibrate(10); // Light tap - 10ms
+      navigator.vibrate(20); // Light tap - 20ms
     }
   };
 
