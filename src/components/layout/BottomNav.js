@@ -18,39 +18,33 @@ export default function BottomNav() {
       name: 'হোম',
       href: '/',
       icon: FiHome,
-      color: 'from-primary to-orange-600',
-      bgColor: 'bg-orange-50 dark:bg-orange-950',
     },
     {
       name: 'সমস্যা পোস্ট করুন',
       href: '/post-complaint',
       icon: FiPlusCircle,
-      color: 'from-primary to-orange-600',
-      bgColor: 'bg-orange-50 dark:bg-orange-950',
       isPrimary: true,
     },
     {
       name: 'ড্যাশবোর্ড',
       href: '/dashboard',
       icon: FiGrid,
-      color: 'from-primary to-orange-600',
-      bgColor: 'bg-orange-50 dark:bg-orange-950',
     },
   ];
 
   return (
     <>
       {/* Spacer to prevent content from being hidden behind fixed nav */}
-      <div className="h-20 md:hidden" />
+      <div className="h-24 md:hidden" />
       
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
         {/* Backdrop blur effect */}
-        <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800" />
+        <div className="absolute inset-0 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-800/50" />
         
         {/* Content */}
-        <div className="relative px-2 py-2">
-          <div className="grid grid-cols-3 gap-1">
+        <div className="relative px-6 py-3">
+          <div className="flex items-end justify-around gap-2">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               const Icon = item.icon;
@@ -59,103 +53,116 @@ export default function BottomNav() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="relative group"
+                  className="relative group flex-1 max-w-[100px]"
                 >
                   <motion.div
-                    whileTap={{ scale: 0.95 }}
-                    className={`
-                      flex flex-col items-center justify-center gap-1.5 py-2 px-3 rounded-2xl
-                      transition-all duration-300
-                      ${isActive 
-                        ? `${item.bgColor} shadow-sm` 
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-                      }
-                    `}
+                    whileTap={{ scale: 0.9 }}
+                    className="flex flex-col items-center justify-center gap-1.5"
                   >
-                    {/* Icon Container */}
+                    {/* Floating Icon Circle */}
                     <div className={`
                       relative flex items-center justify-center
-                      ${item.isPrimary && isActive ? 'w-14 h-14 -mt-6' : 'w-10 h-10'}
+                      ${item.isPrimary ? 'w-16 h-16 -mt-8' : 'w-14 h-14 -mt-6'}
                       transition-all duration-300
                     `}>
-                      {/* Primary button special treatment */}
-                      {item.isPrimary && isActive ? (
-                        <>
-                          {/* Glow effect */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-primary to-orange-600 rounded-full blur-md opacity-60 animate-pulse" />
-                          
-                          {/* Main circle */}
+                      {/* Glow effect - Always present when active */}
+                      {isActive && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 0.6, scale: 1 }}
+                          className={`
+                            absolute inset-0 rounded-full blur-lg animate-pulse
+                            bg-gradient-to-r from-primary to-orange-600
+                          `}
+                        />
+                      )}
+                      
+                      {/* Main Circle */}
+                      <motion.div
+                        initial={false}
+                        animate={{
+                          scale: isActive ? 1 : 0.85,
+                          y: isActive ? 0 : 2,
+                        }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                        className={`
+                          relative w-full h-full rounded-full flex items-center justify-center
+                          transition-all duration-300
+                          ${isActive 
+                            ? 'bg-gradient-to-br from-primary to-orange-600 shadow-xl shadow-orange-500/30' 
+                            : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 shadow-md'
+                          }
+                        `}
+                      >
+                        {/* Inner glow ring */}
+                        {isActive && (
+                          <div className="absolute inset-0.5 rounded-full bg-gradient-to-br from-white/20 to-transparent" />
+                        )}
+                        
+                        {/* Icon */}
+                        <Icon 
+                          className={`
+                            ${item.isPrimary ? 'w-8 h-8' : 'w-7 h-7'}
+                            relative z-10 transition-all duration-300
+                            ${isActive 
+                              ? 'text-white' 
+                              : 'text-gray-600 dark:text-gray-400'
+                            }
+                          `} 
+                        />
+
+                        {/* Rotating border effect when active */}
+                        {isActive && (
                           <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="relative w-full h-full bg-gradient-to-br from-primary to-orange-600 rounded-full shadow-lg flex items-center justify-center"
-                          >
-                            <Icon className="w-7 h-7 text-white" />
-                          </motion.div>
-                        </>
-                      ) : (
-                        <>
-                          {/* Active indicator for non-primary */}
-                          {isActive && !item.isPrimary && (
-                            <motion.div
-                              layoutId="activeIndicator"
-                              className={`absolute inset-0 bg-gradient-to-br ${item.color} rounded-xl opacity-10`}
-                              transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                            />
-                          )}
-                          
-                          {/* Icon */}
-                          <Icon 
-                            className={`
-                              w-6 h-6 relative z-10 transition-all duration-300
-                              ${isActive 
-                                ? `bg-gradient-to-br ${item.color} bg-clip-text text-transparent` 
-                                : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200'
-                              }
-                            `} 
+                            initial={{ rotate: 0 }}
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                            className="absolute inset-0 rounded-full"
+                            style={{
+                              background: 'conic-gradient(from 0deg, transparent 0%, rgba(255, 146, 72, 0.3) 50%, transparent 100%)',
+                            }}
                           />
-                        </>
+                        )}
+                      </motion.div>
+
+                      {/* Ripple effect on active */}
+                      {isActive && (
+                        <motion.div
+                          initial={{ scale: 0.8, opacity: 0.8 }}
+                          animate={{ scale: 1.4, opacity: 0 }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                          className="absolute inset-0 rounded-full border-2 border-primary"
+                        />
                       )}
                     </div>
 
                     {/* Label */}
-                    {!item.isPrimary && (
-                      <span 
-                        className={`
-                          text-[10px] font-medium transition-all duration-300 text-center leading-tight
-                          ${isActive 
-                            ? 'text-gray-900 dark:text-white font-semibold' 
-                            : 'text-gray-600 dark:text-gray-400'
-                          }
-                        `}
-                      >
-                        {item.name}
-                      </span>
-                    )}
-                    
-                    {/* Primary button label (below the circle) */}
-                    {item.isPrimary && (
-                      <span 
-                        className={`
-                          text-[10px] font-medium transition-all duration-300 text-center leading-tight
-                          ${isActive ? 'mt-1' : 'mt-0'}
-                          ${isActive 
-                            ? 'bg-gradient-to-r from-primary to-orange-600 bg-clip-text text-transparent font-semibold' 
-                            : 'text-gray-600 dark:text-gray-400'
-                          }
-                        `}
-                      >
-                        {item.name}
-                      </span>
-                    )}
+                    <motion.span 
+                      initial={false}
+                      animate={{
+                        scale: isActive ? 1 : 0.9,
+                        y: isActive ? 0 : 2,
+                      }}
+                      className={`
+                        text-[11px] font-medium transition-all duration-300 text-center leading-tight
+                        max-w-[80px] line-clamp-2
+                        ${isActive 
+                          ? 'bg-gradient-to-r from-primary to-orange-600 bg-clip-text text-transparent font-bold' 
+                          : 'text-gray-600 dark:text-gray-400'
+                        }
+                      `}
+                    >
+                      {item.name}
+                    </motion.span>
 
-                    {/* Ripple effect on tap */}
+                    {/* Dot indicator below text */}
                     {isActive && (
                       <motion.div
-                        initial={{ scale: 0, opacity: 0.5 }}
-                        animate={{ scale: 2, opacity: 0 }}
-                        transition={{ duration: 0.6 }}
-                        className={`absolute inset-0 bg-gradient-to-r ${item.color} rounded-2xl`}
+                        layoutId="activeTab"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                        className="w-1 h-1 rounded-full bg-gradient-to-r from-primary to-orange-600"
                       />
                     )}
                   </motion.div>
@@ -166,7 +173,7 @@ export default function BottomNav() {
         </div>
 
         {/* Bottom safe area for iOS */}
-        <div className="h-safe-area-inset-bottom bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg" />
+        <div className="h-safe-area-inset-bottom bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl" />
       </nav>
     </>
   );
