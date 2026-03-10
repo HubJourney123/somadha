@@ -150,10 +150,7 @@ export default function PostComplaintPage() {
                   transition={{ delay: 1.2 }}
                   className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800"
                 >
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl">💡</span>
-                    
-                  </div>
+                 
                 </motion.div>
               </div>
             </motion.div>
