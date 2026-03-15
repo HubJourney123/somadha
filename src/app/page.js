@@ -49,99 +49,90 @@ export default function HomePage() {
           <Header />
           
           <main className="with-bottom-nav">
-            {/* Hero Section - Awesome Light Orange Design */}
-            <section className="py-6 px-4 md:px-6">
-              {/* Light Orange Container */}
-              <div className="bg-gradient-to-br from-primary/12 via-primary/6 to-transparent rounded-3xl p-6 md:p-8 shadow-sm border border-primary/10 relative overflow-hidden">
-                {/* Decorative circles */}
-                <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-2xl" />
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary/8 rounded-full blur-2xl" />
-                
-                <div className="relative z-10 space-y-6">
-                  {/* Carousel */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                  >
-                    <Carousel />
-                  </motion.div>
+            {/* Hero Section */}
+            <section className="py-6 px-4 md:px-6 space-y-6">
+              {/* Carousel at top */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <Carousel />
+              </motion.div>
 
-                  {/* Hero Text */}
+              {/* Hero Text */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-center max-w-4xl mx-auto"
+              >
+                <h1 className="text-3xl md:text-5xl font-bold text-neutral-900 dark:text-white mb-3">
+                  স্বাগতম <span className="text-primary">সমাধা</span>য়
+                </h1>
+                <p className="text-base md:text-xl text-neutral-600 dark:text-neutral-400 mb-6">
+                  মাধ্যম নয়, সরাসরি পৌছান
+                </p>
+
+                {/* Show user greeting if logged in */}
+                {session?.user && (
                   <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="text-center max-w-4xl mx-auto"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="mb-6 p-4 bg-primary/10 dark:bg-primary/20 rounded-lg inline-block"
                   >
-                    <h1 className="text-3xl md:text-5xl font-bold text-neutral-900 dark:text-white mb-3">
-                      স্বাগতম <span className="text-primary">সমাধা</span>য়
-                    </h1>
-                    <p className="text-base md:text-xl text-neutral-600 dark:text-neutral-400 mb-6">
-                      মাধ্যম নয়, সরাসরি পৌছান
+                    <p className="text-neutral-900 dark:text-white font-semibold">
+                      স্বাগতম, {session.user.name}!
                     </p>
-
-                    {/* Show user greeting if logged in */}
-                    {session?.user && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="mb-6 p-4 bg-white/60 dark:bg-dark-card/60 backdrop-blur-sm rounded-xl inline-block border border-primary/20 shadow-sm"
-                      >
-                        <p className="text-neutral-900 dark:text-white font-semibold">
-                          স্বাগতম, {session.user.name}!
-                        </p>
-                      </motion.div>
-                    )}
-
-                    {/* CTA Buttons - Side by side on mobile */}
-                    <div className="flex flex-row gap-3 justify-center items-center">
-                      {!session ? (
-                        <>
-                          <Button
-                            variant="outline"
-                            size="md"
-                            onClick={() => signIn('google')}
-                            className="flex-1 max-w-xs bg-white/50 dark:bg-dark-card/50 backdrop-blur-sm hover:bg-white dark:hover:bg-dark-card"
-                          >
-                            <FiLogIn className="w-4 h-4 md:w-5 md:h-5" />
-                            <span className="text-sm md:text-base">Google সাইন ইন</span>
-                          </Button>
-                          <Button
-                            variant="secondary"
-                            size="md"
-                            onClick={() => router.push('/post-complaint')}
-                            className="flex-1 max-w-xs shadow-md"
-                          >
-                            <span className="text-sm md:text-base">অভিযোগ পোস্ট</span>
-                            <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button
-                            variant="outline"
-                            size="md"
-                            onClick={() => router.push('/post-complaint')}
-                            className="flex-1 max-w-xs bg-white/50 dark:bg-dark-card/50 backdrop-blur-sm hover:bg-white dark:hover:bg-dark-card"
-                          >
-                            <span className="text-sm md:text-base">অভিযোগ পোস্ট</span>
-                            <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-                          </Button>
-                          <Button
-                            variant="secondary"
-                            size="md"
-                            onClick={() => router.push('/dashboard')}
-                            className="flex-1 max-w-xs shadow-md"
-                          >
-                            <span className="text-sm md:text-base">ড্যাশবোর্ডে যান</span>
-                            <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-                          </Button>
-                        </>
-                      )}
-                    </div>
                   </motion.div>
+                )}
+
+                {/* CTA Buttons - Side by side on mobile */}
+                <div className="flex flex-row gap-3 justify-center items-center">
+                  {!session ? (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="md"
+                        onClick={() => signIn('google')}
+                        className="flex-1 max-w-xs"
+                      >
+                        <FiLogIn className="w-4 h-4 md:w-5 md:h-5" />
+                        <span className="text-sm md:text-base">Google সাইন ইন</span>
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="md"
+                        onClick={() => router.push('/post-complaint')}
+                        className="flex-1 max-w-xs"
+                      >
+                        <span className="text-sm md:text-base">অভিযোগ পোস্ট</span>
+                        <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="md"
+                        onClick={() => router.push('/post-complaint')}
+                        className="flex-1 max-w-xs"
+                      >
+                        <span className="text-sm md:text-base">অভিযোগ পোস্ট</span>
+                        <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="md"
+                        onClick={() => router.push('/dashboard')}
+                        className="flex-1 max-w-xs"
+                      >
+                        <span className="text-sm md:text-base">ড্যাশবোর্ডে যান</span>
+                        <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
+                      </Button>
+                    </>
+                  )}
                 </div>
-              </div>
+              </motion.div>
             </section>
 
             {/* Stats Section - With Margin */}
