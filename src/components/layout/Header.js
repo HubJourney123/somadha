@@ -36,7 +36,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-white dark:bg-[#1A1A1A] border-b border-gray-200 dark:border-[#2A2A2A] backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90">
+    <header className="sticky top-0 z-40 bg-white dark:bg-[#1A1A1A] border-b border-gray-200 dark:border-[#2A2A2A] backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90">
       <div className="px-4 md:px-6 py-2">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
